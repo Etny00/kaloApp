@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalorien-Tracker App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSC鉴定==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="img/icon.png">
+    <meta name="theme-color" content="#9FB8DF">
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center">
+    <h1 id="pageTitle" class="text-2xl font-bold mb-4 text-left"></h1>
+
+    <div id="today-page" class="page-content">
+        <div class="bg-white rounded-xl shadow-md p-6 mb-6 w-full flex flex-col items-center">
+            <div class="progress-circle-container mb-4">
+                <svg viewBox="0 0 180 180">
+                    <circle cx="90" cy="90" r="80" fill="none" stroke="#E5E7EB" stroke-width="15"></circle>
+
+                    <circle cx="90" cy="90" r="80" fill="none" stroke="#DED79F" stroke-width="15" /* Yellow */
+                            stroke-dasharray="158.33 502.65" stroke-dashoffset="0"></circle>
+                    <circle cx="90" cy="90" r="80" fill="none" stroke="#D4EAE4" stroke-width="15" /* Green */
+                            stroke-dasharray="90.48 502.65" stroke-dashoffset="-158.33"></circle>
+                    <circle cx="90" cy="90" r="80" fill="none" stroke="#9FB8DF" stroke-width="15" /* Blue */
+                            stroke-dasharray="62.83 502.65" stroke-dashoffset="-248.81"></circle>
+                </svg>
+                <div class="text-overlay">
+                    <div class="label">Verbraucht</div>
+                    <div class="value" id="consumedCalories">1.240 kcal</div>
+                    <div class="label" id="calorieGoal">Ziel 2.000 kcal</div>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm w-full mt-4">
+                <div class="flex items-center">
+                    <span class="w-3 h-3 rounded-full legend-color-blue mr-2"></span>
+                    <span>Kohlenhydrate <span id="legendCarbs">62.5 g</span></span>
+                </div>
+                <div class="flex items-center">
+                    <span class="w-3 h-3 rounded-full legend-color-green mr-2"></span>
+                    <span>Eiweiß <span id="legendProtein">90 g</span></span>
+                </div>
+                <div class="flex items-center">
+                    <span class="w-3 h-3 rounded-full legend-color-yellow mr-2"></span>
+                    <span>Fett <span id="legendFat">70 g</span></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-4">
+            <div class="bg-white rounded-xl shadow-md p-4 w-full">
+                <div class="flex justify-between items-center mb-2">
+                    <h2 class="font-semibold text-lg mb-0">Frühstück</h2>
+                    <button class="add-button">
+                        + Hinzufügen
+                    </button>
+                </div>
+                <div class="flex justify-between items-center py-2"> <span>Haferflocken - 250 kcal</span>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-md p-4 w-full">
+                <div class="flex justify-between items-center mb-2">
+                    <h2 class="font-semibold text-lg mb-0">Mittagessen</h2>
+                    <button class="add-button">
+                        + Hinzufügen
+                    </button>
+                </div>
+                <div class="flex justify-between items-center py-2">
+                    <span>Hähnchen mit Reis - 600 kcal</span>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-md p-4 w-full">
+                <div class="flex justify-between items-center mb-2">
+                    <h2 class="font-semibold text-lg mb-0">Abendessen</h2>
+                    <button class="add-button">
+                        + Hinzufügen
+                    </button>
+                </div>
+                <div class="flex justify-between items-center py-2">
+                    <span>Gemüsepfanne - 400 kcal</span>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-md p-4 w-full">
+                <div class="flex justify-between items-center py-2">
+                    <h2 class="font-semibold text-lg mb-0">Snacks</h2>
+                    <button class="add-button">
+                        + Hinzufügen
+                    </button>
+                </div>
+                <div class="flex justify-between items-center py-2">
+                    <span>Proteinriegel - 150 kcal</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-md p-4 mt-6 mb-6 w-full">
+            <h2 class="font-semibold text-lg mb-2">Wasser</h2>
+            <div class="flex justify-between items-center mb-4">
+                <span id="waterAmount" class="text-xl font-bold">1,5 L</span>
+                <span class="text-gray-500">von <span id="waterGoal">2,5 L</span></span>
+            </div>
+            <div class="flex justify-center space-x-2" id="waterGlassesContainer">
+                </div>
+        </div>
+    </div>
+
+    <div id="profile-page" class="page-content hidden">
+        <div class="bg-white rounded-xl shadow-md p-6 mb-6 w-full">
+            <h2 class="font-semibold text-lg mb-4">BMI & Kalorienbedarf Rechner</h2>
+            <div class="space-y-4">
+                <div>
+                    <label for="height" class="block text-sm font-medium text-gray-700 mb-1">Größe (cm)</label>
+                    <input type="number" id="height" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" placeholder="z.B. 175">
+                </div>
+                <div>
+                    <label for="weight" class="block text-sm font-medium text-gray-700 mb-1">Gewicht (kg)</label>
+                    <input type="number" id="weight" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" placeholder="z.B. 70">
+                </div>
+                <div>
+                    <label for="age" class="block text-sm font-medium text-gray-700 mb-1">Alter</label>
+                    <input type="number" id="age" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" placeholder="z.B. 30">
+                </div>
+                <div>
+                    <span class="block text-sm font-medium text-gray-700 mb-1">Geschlecht</span>
+                    <div class="flex items-center space-x-4">
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="gender" value="male" class="form-radio text-blue-600">
+                            <span class="ml-2">Männlich</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="gender" value="female" class="form-radio text-blue-600">
+                            <span class="ml-2">Weiblich</span>
+                        </label>
+                    </div>
+                </div>
+                <div>
+                    <label for="activityLevel" class="block text-sm font-medium text-gray-700 mb-1">Aktivitätslevel</label>
+                    <select id="activityLevel" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                        <option value="1.2">Wenig aktiv (kaum/keine Bewegung)</option>
+                        <option value="1.375">Leicht aktiv (leichter Sport 1-3 Tage/Woche)</option>
+                        <option value="1.55">Moderat aktiv (moderater Sport 3-5 Tage/Woche)</option>
+                        <option value="1.725">Sehr aktiv (intensiver Sport 6-7 Tage/Woche)</option>
+                        <option value="1.9">Extrem aktiv (sehr intensiver Sport/körperliche Arbeit)</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="goal" class="block text-sm font-medium text-gray-700 mb-1">Ziel</label>
+                    <select id="goal" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                        <option value="maintain">Gewicht halten</option>
+                        <option value="lose">Gewicht abnehmen</option>
+                        <option value="gain">Gewicht zunehmen</option>
+                    </select>
+                </div>
+                <button id="calculateBmi" class="add-button w-full">Berechnen</button>
+            </div>
+            
+            <div id="bmiResult" class="mt-6 text-center text-lg font-bold">
+                </div>
+            <div id="bmiCategory" class="mt-2 text-center text-sm">
+                </div>
+            <div id="calorieRecommendation" class="mt-4 text-center text-base font-semibold text-blue-600">
+                </div>
+        </div>
+    </div>
+
+    <div id="meals-page" class="page-content hidden">
+        <div class="bg-white rounded-xl shadow-md p-6 mb-6 w-full">
+            <h2 class="font-semibold text-lg mb-2">Eigenes Produkt hinzufügen</h2>
+            <div class="space-y-3">
+                <div>
+                    <label for="productNameInput" class="block text-sm font-medium text-gray-700 mb-1">Produktname</label>
+                    <input type="text" id="productNameInput" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" placeholder="z.B. Hausgemachte Suppe">
+                </div>
+                <div>
+                    <label for="productKcalInput" class="flex items-center text-sm font-medium text-gray-700 mb-1">
+                        <span class="w-3 h-3 rounded-full bg-gray-200 mr-2"></span>Kalorien pro 100g
+                    </label>
+                    <input type="number" id="productKcalInput" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" placeholder="kcal">
+                </div>
+                <div>
+                    <label for="productCarbsInput" class="flex items-center text-sm font-medium text-gray-700 mb-1">
+                        <span class="w-3 h-3 rounded-full legend-color-blue mr-2"></span>Kohlenhydrate (g)
+                    </label>
+                    <input type="number" id="productCarbsInput" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" placeholder="Optional">
+                </div>
+                <div>
+                    <label for="productProteinInput" class="flex items-center text-sm font-medium text-gray-700 mb-1">
+                        <span class="w-3 h-3 rounded-full legend-color-green mr-2"></span>Eiweiß (g)
+                    </label>
+                    <input type="number" id="productProteinInput" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" placeholder="Optional">
+                </div>
+                <div>
+                    <label for="productFatInput" class="flex items-center text-sm font-medium text-gray-700 mb-1">
+                        <span class="w-3 h-3 rounded-full legend-color-yellow mr-2"></span>Fett (g)
+                    </label>
+                    <input type="number" id="productFatInput" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" placeholder="Optional">
+                </div>
+                <div>
+                    <label for="productPortionInput" class="flex items-center text-sm font-medium text-gray-700 mb-1">
+                        <span class="w-3 h-3 rounded-full bg-purple-300 mr-2"></span>Portionsgröße (g)
+                    </label>
+                    <input type="number" id="productPortionInput" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" placeholder="Optional">
+                </div>
+                <button id="saveProductButton" class="add-button w-full">Produkt speichern</button>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-md p-6 mb-6 w-full">
+            <h2 class="font-semibold text-lg mb-2">Meine Produkte</h2>
+            <input type="text" id="productSearchInput" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 mb-2" placeholder="Produkte durchsuchen...">
+            <p id="productCountDisplay" class="text-sm text-gray-500 mb-4">0 von 0 Produkten angezeigt</p>
+
+            <div class="overflow-x-auto rounded-lg shadow">
+                <table class="min-w-full product-table">
+                    <thead>
+                        <tr>
+                            <th>Produkt</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productTableBody">
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm w-full mt-4">
+                <div class="flex items-center">
+                    <span class="w-3 h-3 rounded-full bg-gray-200 mr-2"></span>
+                    <span>kcal/100g</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="w-3 h-3 rounded-full legend-color-blue mr-2"></span>
+                    <span>Kohlenhydrate</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="w-3 h-3 rounded-full legend-color-green mr-2"></span>
+                    <span>Eiweiß</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="w-3 h-3 rounded-full legend-color-yellow mr-2"></span>
+                    <span>Fett</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="w-3 h-3 rounded-full bg-purple-300 mr-2"></span>
+                    <span>Portion</span>
+                </div>
+            </div>
+            
+            <div class="pagination-controls">
+                <select id="itemsPerPageSelect" class="items-per-page-select">
+                    <option value="10">10 pro Seite</option>
+                    <option value="25" selected>25 pro Seite</option>
+                    <option value="50">50 pro Seite</option>
+                    <option value="100">100 pro Seite</option>
+                </select>
+                <button id="prevPageButton" disabled>Zurück</button>
+                <span id="paginationInfo" class="pagination-info">Seite 1 von 1</span>
+                <button id="nextPageButton">Weiter</button>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-md p-6 mb-6 w-full">
+            <h2 class="font-semibold text-lg mb-2">Produkte importieren/exportieren</h2>
+            <div class="flex space-x-4">
+                <button id="exportCsvButton" class="add-button flex-1">Als CSV exportieren</button>
+                <button id="importCsvButton" class="add-button flex-1">CSV import-ieren</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="overview-page" class="page-content hidden">
+        <div class="bg-white rounded-xl shadow-md p-6 mb-6 w-full">
+            <h2 class="font-semibold text-lg mb-2">Deine Übersicht</h2>
+            
+            <div class="flex justify-between items-center mb-4">
+                <button id="prevMonthButton" class="calendar-nav-button">&lt;</button>
+                <span id="currentMonthDisplay" class="text-xl font-bold"></span>
+                <button id="nextMonthButton" class="calendar-nav-button">&gt;</button>
+            </div>
+
+            <div id="calendarGrid" class="grid grid-cols-7 gap-2 text-center text-sm">
+                <div class="font-semibold text-gray-500">Mo</div>
+                <div class="font-semibold text-gray-500">Di</div>
+                <div class="font-semibold text-gray-500">Mi</div>
+                <div class="font-semibold text-gray-500">Do</div>
+                <div class="font-semibold text-gray-500">Fr</div>
+                <div class="font-semibold text-gray-500">Sa</div>
+                <div class="font-semibold text-gray-500">So</div>
+                </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-md p-6 mb-6 w-full">
+            <h2 class="font-semibold text-xl mt-6 mb-2" id="dailySummaryDate"></h2>
+            
+            <div class="progress-circle-container mb-4 mx-auto" /* Removed inline style here */>
+                <svg viewBox="0 0 180 180">
+                    <circle cx="90" cy="90" r="80" fill="none" stroke="#E5E7EB" stroke-width="15"></circle>
+
+                    <circle id="dailyCarbsArc" cx="90" cy="90" r="80" fill="none" stroke="#9FB8DF" stroke-width="15" /* Blue */
+                            stroke-dasharray="0 502.65" stroke-dashoffset="0" transform="rotate(-90 90 90)"></circle>
+                    <circle id="dailyProteinArc" cx="90" cy="90" r="80" fill="none" stroke="#D4EAE4" stroke-width="15" /* Green */
+                            stroke-dasharray="0 502.65" stroke-dashoffset="0" transform="rotate(-90 90 90)"></circle>
+                    <circle id="dailyFatArc" cx="90" cy="90" r="80" fill="none" stroke="#DED79F" stroke-width="15" /* Yellow */
+                            stroke-dasharray="0 502.65" stroke-dashoffset="0" transform="rotate(-90 90 90)"></circle>
+                </svg>
+                <div class="text-overlay">
+                    <div class="label">Verbraucht</div>
+                    <div class="value" id="dailyConsumedCalories">0 kcal</div>
+                    <div class="label" id="dailyRemainingCalories">Ziel 2.000 kcal</div>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm w-full mt-4">
+                <div class="flex items-center">
+                    <span class="w-3 h-3 rounded-full legend-color-blue mr-2"></span>
+                    <span>Kohlenhydrate</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="w-3 h-3 rounded-full legend-color-green mr-2"></span>
+                    <span>Eiweiß</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="w-3 h-3 rounded-full legend-color-yellow mr-2"></span>
+                    <span>Fett</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="w-3 h-3 rounded-full bg-gray-200 mr-2"></span>
+                    <span>Verbleibend</span>
+                </div>
+            </div>
+
+
+            <h3 class="font-semibold text-lg mt-6 mb-2">Verzehrte Lebensmittel:</h3>
+            <div id="consumedFoodList" class="text-gray-700">
+                </div>
+        </div>
+    </div>
+
+    <div id="settings-page" class="page-content hidden">
+        <div class="bg-white rounded-xl shadow-md p-6 mb-6 w-full">
+            <h2 class="font-semibold text-lg mb-2">Einstellungen</h2>
+            <p class="text-gray-700">Passe die App nach deinen Wünschen an.</p>
+            
+            <div class="space-y-4 mt-4">
+                <div>
+                    <label for="newCalorieGoalInput" class="block text-sm font-medium text-gray-700 mb-1">Kalorienziel ändern</label>
+                    <input type="number" id="newCalorieGoalInput" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" placeholder="z.B. 2200">
+                </div>
+
+                <div>
+                    <label for="newWaterGoalInput" class="block text-sm font-medium text-gray-700 mb-1">Wasserziel ändern (Liter)</label>
+                    <input type="number" step="0.250" id="newWaterGoalInput" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" placeholder="z.g. 3.0">
+                </div>
+                
+                <ul class="list-disc list-inside">
+                    <li>Benachrichtigungen</li>
+                    <li>Datenschutz</li>
+                </ul>
+            </div>
+
+            <button id="saveSettingsButton" class="add-button mt-4">Einstellungen speichern</button>
+        </div>
+    </div>
+
+    <nav class="nav-bar fixed bottom-0 bg-white shadow-lg rounded-t-xl p-4 flex justify-around items-center w-full">
+        <div class="nav-item" data-page="today-page">
+            <i class="fa-solid fa-house"></i>
+            <span>Heute</span>
+        </div>
+        <div class="nav-item" data-page="profile-page">
+            <i class="fa-solid fa-user"></i>
+            <span>Profil</span>
+        </div>
+        <div class="nav-item" data-page="meals-page">
+            <i class="fa-solid fa-utensils"></i>
+            <span>Mahlzeit</span>
+        </div>
+        <div class="nav-item" data-page="overview-page">
+            <i class="fa-solid fa-calendar-days"></i>
+            <span>Übersicht</span>
+        </div>
+        <div class="nav-item" data-page="settings-page">
+            <i class="fa-solid fa-gear"></i>
+            <span>Einst.</span>
+        </div>
+    </nav>
+
+    <div id="foodDetailModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold" id="modalFoodNameDisplay"></h2>
+                <button id="closeModalButton" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+            </div>
+            <div class="space-y-3">
+                <div>
+                    <label for="modalKcalInput" class="flex items-center text-sm font-medium text-gray-700 mb-1">
+                        <span class="w-3 h-3 rounded-full bg-gray-200 mr-2"></span>Kalorien (kcal)
+                    </label>
+                    <input type="number" id="modalKcalInput" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="modalCarbsInput" class="flex items-center text-sm font-medium text-gray-700 mb-1">
+                        <span class="w-3 h-3 rounded-full legend-color-blue mr-2"></span>Kohlenhydrate (g)
+                    </label>
+                    <input type="number" id="modalCarbsInput" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="modalProteinInput" class="flex items-center text-sm font-medium text-gray-700 mb-1">
+                        <span class="w-3 h-3 rounded-full legend-color-green mr-2"></span>Eiweiß (g)
+                    </label>
+                    <input type="number" id="modalProteinInput" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="modalFatInput" class="flex items-center text-sm font-medium text-gray-700 mb-1">
+                        <span class="w-3 h-3 rounded-full legend-color-yellow mr-2"></span>Fett (g)
+                    </label>
+                    <input type="number" id="modalFatInput" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="modalPortionInput" class="flex items-center text-sm font-medium text-gray-700 mb-1">
+                        <span class="w-3 h-3 rounded-full bg-purple-300 mr-2"></span>Portionsgröße (g)
+                    </label>
+                    <input type="number" id="modalPortionInput" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                </div>
+            </div>
+            <div class="flex justify-end space-x-4 mt-6">
+                <button id="deleteFoodEntryButton" class="add-button px-4 py-2 bg-transparent text-red-500 border border-red-500 hover:bg-red-500 hover:text-white">Löschen</button>
+                <button id="saveFoodEntryButton" class="add-button px-4 py-2">Speichern</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="productDetailModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold" id="modalProductNameDisplay"></h2>
+                <button id="closeProductModalButton" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+            </div>
+            <div class="space-y-3">
+                <div>
+                    <label for="modalProductKcalInput" class="flex items-center text-sm font-medium text-gray-700 mb-1">
+                        <span class="w-3 h-3 rounded-full bg-gray-200 mr-2"></span>
+                        Kalorien pro 100g
+                    </label>
+                    <input type="number" id="modalProductKcalInput" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="modalProductCarbsInput" class="flex items-center text-sm font-medium text-gray-700 mb-1">
+                        <span class="w-3 h-3 rounded-full legend-color-blue mr-2"></span>
+                        Kohlenhydrate (g)
+                    </label>
+                    <input type="number" id="modalProductCarbsInput" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="modalProductProteinInput" class="flex items-center text-sm font-medium text-gray-700 mb-1">
+                        <span class="w-3 h-3 rounded-full legend-color-green mr-2"></span>
+                        Eiweiß (g)
+                    </label>
+                    <input type="number" id="modalProductProteinInput" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="modalProductFatInput" class="flex items-center text-sm font-medium text-gray-700 mb-1">
+                        <span class="w-3 h-3 rounded-full legend-color-yellow mr-2"></span>
+                        Fett (g)
+                    </label>
+                    <input type="number" id="modalProductFatInput" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="modalProductPortionInput" class="flex items-center text-sm font-medium text-gray-700 mb-1">
+                        <span class="w-3 h-3 rounded-full bg-purple-300 mr-2"></span>Portionsgröße (g)
+                    </label>
+                    <input type="number" id="modalProductPortionInput" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                </div>
+            </div>
+            <div class="flex justify-end space-x-4 mt-6">
+                <button id="deleteProductEntryButton" class="add-button px-4 py-2 bg-transparent text-red-500 border border-red-500 hover:bg-red-500 hover:text-white">Löschen</button>
+                <button id="saveProductEntryButton" class="add-button px-4 py-2">Speichern</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

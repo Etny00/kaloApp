@@ -1,0 +1,27 @@
+{
+    "name": "Kalorien-Tracker App",
+    "short_name": "Kalorien-App",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#f3f4f6",
+    "theme_color": "#9FB8DF",
+    "description": "Eine einfache Kalorien-Tracker Web App zur täglichen Erfassung von Kalorien und Wasser.",
+    "icons": [
+      {
+        "src": "img/icon.png",
+        "sizes": "96x96",
+        "type": "image/png"
+      },
+      {
+        "src": "img/icon.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "img/icon.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ]
+  }
+  

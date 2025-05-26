@@ -1,0 +1,496 @@
+/* Basic font for the app */
+body {
+    font-family: 'Inter', sans-serif;
+    color: #556985; /* Main color for all text */
+}
+
+/* Progress circle container style (SVG container) */
+.progress-circle-container {
+    position: relative;
+    width: 220px; /* Enlarged diameter */
+    height: 220px; /* Enlarged height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.progress-circle-container svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg); /* Starts the circle at the top */
+}
+
+.progress-circle-container .text-overlay {
+    position: absolute;
+    text-align: center;
+    z-index: 10; /* Ensures text is above SVG */
+    color: #556985; /* Adjusted color for text in the circle */
+}
+
+.progress-circle-container .text-overlay .value {
+    font-size: 2rem; /* Adjusted text size */
+    line-height: 1;
+    font-weight: bold;
+}
+
+.progress-circle-container .text-overlay .label {
+    font-size: 1.25rem; /* Adjusted text size */
+    color: #bfcad9;
+}
+
+/* Water glasses style */
+.water-glass {
+    width: 40px; /* w-10 */
+    height: 40px; /* h-10 */
+    background-color: #EFF6FF; /* Background color of the glass container (lighter) */
+    border-radius: 0.5rem; /* rounded-lg */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.water-glass i { /* Style for the icon in the water glass */
+    font-size: 1.5rem; /* Size of the glass icon */
+    color: #C0D1ED; /* Lighter blue for unfilled icons */
+}
+
+.water-glass.filled {
+    background-color: #BFDBFE; /* Background of the filled glass container */
+}
+
+.water-glass.filled i { /* Style for the icon in the filled water glass */
+    color: #9FB8DF; /* Darker blue for filled icons */
+}
+
+/* Navigation bar style */
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    color: #556985; /* Color of navigation icons */
+    transition: color 0.2s ease-in-out;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+}
+
+.nav-item:hover {
+    color: #7C95C4; /* Darker blue on hover */
+    background-color: #EFF6FF; /* Lighter background on hover */
+}
+
+.nav-item i { /* Style for Font Awesome icons in the navigation */
+    font-size: 24px; /* Size of icons */
+    margin-bottom: 0.25rem;
+}
+
+.nav-item span { /* Style for the text in the navigation */
+    font-size: 0.75rem; /* Smaller font size (corresponds to text-xs in Tailwind) */
+}
+
+
+/* New colors for the legend */
+.legend-color-blue {
+    background-color: #9FB8DF;
+}
+.legend-color-green {
+    background-color: #D4EAE4;
+}
+.legend-color-yellow {
+    background-color: #DED79F;
+}
+
+/* New text color for links on hover */
+.text-color-blue {
+    color: #9FB8DF;
+}
+
+
+/* Style for the Add button (now used for all primary actions) */
+.add-button {
+    background-color: transparent; /* Remove background */
+    color: #9FB8DF; /* Blue font color */
+    padding: 0.5rem 1rem;
+    border-radius: 9999px; /* rounded-full */
+    font-size: 0.875rem; /* text-sm */
+    font-weight: 500; /* font-medium */
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+    border: 1px solid #9FB8DF; /* Add a border to make it more prominent */
+}
+
+.add-button:hover {
+    background-color: #9FB8DF; /* Blue background on hover */
+    color: white; /* White text on hover */
+}
+
+/* Style for edit/delete buttons in table */
+.action-button {
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.action-button.edit {
+    color: #9FB8DF; /* Blue for edit */
+    background-color: transparent;
+}
+
+.action-button.edit:hover {
+    background-color: #DBEAFE; /* Light blue background on hover */
+}
+
+.action-button.delete {
+    color: #EF4444; /* Red for delete */
+    background-color: transparent;
+}
+
+.action-button.delete:hover {
+    background-color: #FEE2E2; /* Light red background on hover */
+}
+
+
+/* Responsive adjustment for mobile view */
+@media (max-width: 640px) {
+    .main-container {
+        padding-bottom: 80px; /* Space for fixed navigation bar */
+    }
+    .nav-bar {
+        width: 100%;
+        left: 0;
+        right: 0;
+        border-radius: 0; /* No rounded corners at the bottom on small screens */
+    }
+}
+
+/* Style for page content */
+.page-content {
+    display: none; /* Hide all page content by default */
+    width: 100%;
+    max-width: 480px; /* max-w-md from Tailwind for mobile */
+    padding: 1rem; /* p-4 from Tailwind */
+    padding-bottom: 5rem; /* pb-20 from Tailwind */
+}
+
+/* Adjust max-width for larger screens (desktop) */
+@media (min-width: 768px) { /* Tailwind's 'md' breakpoint */
+    .page-content {
+        max-width: 768px; /* max-w-2xl for desktop */
+    }
+    /* Adjust navigation bar width for larger screens if needed */
+    .nav-bar {
+        max-width: 768px; /* Match page content width */
+    }
+}
+
+
+.page-content.active {
+    display: block; /* Show active page */
+}
+
+/* Table specific styles */
+.product-table {
+    width: 100%; /* Ensure table takes full width of its container */
+    border-collapse: collapse; /* Collapse borders for a cleaner look */
+    table-layout: fixed; /* Ensures columns respect width properties */
+}
+
+.product-table th,
+.product-table td {
+    padding: 0.5rem 0.75rem; /* Consistent padding for all cells */
+    font-size: 0.875rem; /* text-sm, smaller font size */
+    text-align: left;
+    vertical-align: middle; /* Vertically align text content */
+    border-bottom: none; /* REMOVED border-bottom from cells */
+}
+
+.product-table th {
+    background-color: #9FB8DF; /* Blue header background */
+    color: white;
+    font-weight: 600;
+}
+
+/* Add border-bottom to table rows instead of cells */
+.product-table tr {
+    border-bottom: 1px solid #E5E7EB; /* Light gray border for rows */
+}
+
+/* Remove border from the last row to avoid double border at the bottom of the table */
+.product-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+
+.product-table tbody tr:nth-child(odd) {
+    background-color: #FFFFFF; /* White background for odd rows */
+}
+
+.product-table tbody tr:nth-child(even) {
+    background-color: #F9FAFB; /* Light gray background for even rows */
+}
+
+/* New styles for the product table content to mimic consumedFoodList */
+.product-table-cell-content {
+    display: flex;
+    flex-direction: column; /* Stack name and details vertically by default (mobile) */
+    padding-top: 0.75rem; /* py-1 equivalent */
+    padding-bottom: 0.75rem; /* py-1 equivalent */
+}
+
+.product-details-container {
+    display: flex;
+    flex-wrap: wrap; /* Allow details to wrap on multiple lines */
+    gap: 0.75rem; /* Space between individual detail items */
+    font-size: 0.875rem; /* text-sm */
+    color: #6B7280; /* text-gray-700 */
+    margin-top: 0.25rem; /* mt-1 */
+}
+
+/* Ensure the name is bold and clickable */
+.product-table-cell-content > span {
+    cursor: pointer;
+    font-weight: bold;
+    color: #8395AF; /* Blue color for links */
+}
+
+.product-table-cell-content > span:hover {
+    color: #9FB8DF; /* Darker blue on hover */
+}
+
+
+/* Pagination specific styles */
+.pagination-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    flex-wrap: wrap; /* Allow wrapping on small screens */
+    gap: 0.5rem; /* Spacing between items if wrapped */
+}
+
+.pagination-controls button {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.875rem;
+    border-radius: 0.25rem;
+    background-color: #9FB8DF;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.pagination-controls button:hover:not(:disabled) {
+    background-color: #7C95C4;
+}
+
+.pagination-controls button:disabled {
+    background-color: #CBD5E1; /* Gray for disabled buttons */
+    cursor: not-allowed;
+}
+
+.pagination-info {
+    font-size: 0.875rem;
+    color: #556985;
+}
+
+.items-per-page-select {
+    padding: 0.4rem;
+    border: 1px solid #D1D5DB;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    color: #556985;
+}
+
+/* Mobile specific table adjustments */
+@media (max-width: 768px) {
+    /* No need to hide specific columns anymore, as the layout is flexible */
+    .product-table th { /* Only the "Produkt" header remains */
+        width: 100%; /* Take full width */
+    }
+    .product-table td {
+        display: block; /* Make table cells behave like block elements for stacking */
+        width: 100%; /* Take full width */
+        padding: 10px 5px; /* Apply padding directly to td */
+    }
+
+    /* Adjust padding and font size for smaller screens */
+    .product-table th,
+    .product-table td {
+        font-size: 1rem; /* Slightly smaller font size */
+    }
+
+    .product-details-container {
+        font-size: 0.8rem; /* Even smaller for details on mobile */
+        gap: 0.5rem; /* Smaller gap between details */
+    }
+}
+
+/* Desktop specific adjustments for product table content */
+@media (min-width: 768px) {
+    .product-table-cell-content {
+        flex-direction: row; /* Display name and details in a row */
+        justify-content: space-between; /* Space them out */
+        align-items: center; /* Vertically align items */
+    }
+
+    .product-details-container {
+        margin-top: 0; /* Remove top margin */
+        margin-left: auto; /* Push details to the right */
+        flex-wrap: nowrap; /* Prevent wrapping on desktop */
+    }
+
+    /* Adjust column widths for desktop display */
+    .product-table th:nth-child(1) { /* Produkt column */
+        width: 30%;
+    }
+    .product-table th:nth-child(2) { /* kcal/100g column */
+        width: 15%;
+    }
+    .product-table th:nth-child(3) { /* Kohlenhydrate (g) column */
+        width: 15%;
+    }
+    .product-table th:nth-child(4) { /* Eiweiß (g) column */
+        width: 15%;
+    }
+    .product-table th:nth-child(5) { /* Fett (g) column */
+        width: 15%;
+    }
+    .product-table th:nth-child(6) { /* Portionsgröße (g/ml) column */
+        width: 10%;
+    }
+}
+
+
+/* Alignment for pageTitle on all screen sizes */
+#pageTitle {
+    width: 100%; /* Take full width of its parent */
+    max-width: 480px; /* Default max-width for mobile */
+    margin: 0 auto; /* Center the title horizontally */
+    padding: 1rem; /* Padding to match page content */
+    padding-bottom: 0; /* No bottom padding for consistency with mb-4 */
+}
+
+@media (min-width: 768px) {
+    #pageTitle {
+        max-width: 768px; /* Increase max-width for desktop */
+    }
+}
+
+/* Calendar Grid Day Styling */
+#calendarGrid > div { /* Target all direct children of calendarGrid (weekday headers and day numbers) */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1 / 1; /* Make them square to ensure perfect circles when border-radius is 50% */
+    border-radius: 9999px; /* Make it circular */
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+    width: 36px; /* Default size for mobile */
+    height: 36px; /* Default size for mobile */
+}
+
+/* Style for non-selected actual day numbers */
+#calendarGrid div[data-date].non-selected-day {
+    background-color: #F0F8FF; /* Very light blue for non-selected days */
+    color: #556985; /* Default text color */
+    cursor: pointer;
+    padding: 0; /* Let flexbox handle centering */
+    font-size: 1.0rem; /* Adjusted font size as requested */
+}
+
+#calendarGrid div[data-date].non-selected-day:hover {
+    background-color: #9FB8DF; /* Typical blue on hover for non-selected days */
+    color: white; /* White text on hover as requested */
+}
+
+/* Style for the selected day */
+#calendarGrid div[data-date].selected-day { /* New class for selected day with higher specificity */
+    background-color: #9FB8DF; /* Darker blue for selected day - stays distinct */
+    color: white; /* White text for better contrast */
+    font-weight: bold;
+}
+
+#calendarGrid div[data-date].selected-day:hover {
+    background-color: #9FB8DF; /* Keeps the darker blue on hover for selected day */
+    color: white; /* White text on hover */
+}
+
+/* Calendar Navigation Buttons Styling */
+.calendar-nav-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px; /* Fixed width for circular shape */
+    height: 36px; /* Fixed height for circular shape */
+    border-radius: 9999px; /* Make it circular */
+    background-color: #9FB8DF; /* App's typical blue */
+    color: white; /* White text/icon */
+    font-size: 1.25rem; /* Larger icon/text for buttons */
+    font-weight: bold;
+    border: none; /* Remove default border */
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.calendar-nav-button:hover {
+    background-color: #7C95C4; /* Darker blue on hover */
+}
+
+/* Desktop specific adjustments for calendar days */
+@media (min-width: 768px) {
+    #calendarGrid > div { /* Apply to all grid items, including weekday headers for consistency */
+        width: 50px; /* Fixed width for desktop */
+        height: 50px; /* Fixed height for desktop */
+    }
+    #calendarGrid div[data-date] {
+        font-size: 1.1rem; /* Adjust font size for better fit in 50px circle */
+    }
+}
+
+/* Modal styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Ensure it's on top of other content */
+}
+
+.modal-content {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 0.75rem; /* rounded-xl */
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); /* shadow-xl */
+    width: 90%;
+    max-width: 400px; /* Max width for the modal */
+    position: relative;
+}
+
+.modal-content input[type="number"],
+.modal-content input[type="text"] {
+    /* Inherit styles from existing inputs */
+    padding: 0.5rem;
+    border: 1px solid #D1D5DB; /* border-gray-300 */
+    border-radius: 0.375rem; /* rounded-md */
+    width: 100%;
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+/* Close button for modal */
+#closeModalButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem; /* Enlarge the 'x' */
+    line-height: 1;
+    padding: 0;
+}
