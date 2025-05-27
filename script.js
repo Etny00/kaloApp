@@ -1094,7 +1094,8 @@ function updateDailySummary(date) {
                 listItem.appendChild(nameSpan);
 
                 const detailsDiv = document.createElement('div');
-                detailsDiv.classList.add('flex', 'flex-wrap', 'gap-x-4', 'gap-y-1', 'text-sm', 'text-gray-700', 'mt-1', 'md:mt-0', 'md:ml-auto'); // Added md:mt-0, md:ml-auto
+                // Changed 'gap-x-4' to 'justify-around' for space-around effect
+                detailsDiv.classList.add('flex', 'flex-wrap', 'justify-around', 'gap-y-1', 'text-sm', 'text-gray-700', 'mt-1', 'md:mt-0', 'md:ml-auto');
 
                 // Helper function to create detail spans without labels
                 detailsDiv.appendChild(createValueSpan(entry.kcal, 'bg-gray-200', ' kcal'));
@@ -1143,15 +1144,17 @@ function updateDailySummary(date) {
     const fatDash = fatPercentageOfGoal * circumference;
 
     // Set stroke-dasharray and stroke-dashoffset for each arc
-    // Order of drawing (z-index wise in SVG): Carbs first, then Protein, then Fat
+    // Order of drawing (clockwise): Carbs first, then Protein, then Fat
+    // Since the SVG circles already have transform="rotate(-90 90 90)", their "0" point is at the top.
+    // To draw clockwise from the top, stroke-dashoffset needs to be negative.
     dailyCarbsArc.setAttribute('stroke-dasharray', `${carbsDash} ${circumference - carbsDash}`);
-    dailyCarbsArc.setAttribute('stroke-dashoffset', '0'); // Starts at 0
+    dailyCarbsArc.setAttribute('stroke-dashoffset', '0'); // Starts at 0 (top)
 
     dailyProteinArc.setAttribute('stroke-dasharray', `${proteinDash} ${circumference - proteinDash}`);
-    dailyProteinArc.setAttribute('stroke-dashoffset', `-${carbsDash}`); // Offset by carbs
+    dailyProteinArc.setAttribute('stroke-dashoffset', `-${carbsDash}`); // Offset by carbs (clockwise)
 
     dailyFatArc.setAttribute('stroke-dasharray', `${fatDash} ${circumference - fatDash}`);
-    dailyFatArc.setAttribute('stroke-dashoffset', `-${carbsDash + proteinDash}`); // Offset by carbs + protein
+    dailyFatArc.setAttribute('stroke-dashoffset', `-${carbsDash + proteinDash}`); // Offset by carbs + protein (clockwise)
 
     // If total consumed is 0, reset arcs
     if (summaryData.totalKcal === 0) {
