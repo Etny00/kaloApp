@@ -258,13 +258,97 @@ function initializeBmiCalculator() {
                     recommendationText = `Zum Zunehmen wird ein Ziel von ca. ${recommendedCalories.toFixed(0)} kcal pro Tag empfohlen.`;
                 }
 
-                bmiResultDiv.textContent = `Dein BMI: ${bmi.toFixed(2)}`;
-                bmiCategoryDiv.textContent = `Kategorie: ${category}`;
-                calorieRecommendationDiv.textContent = recommendationText;
+                // Call the new modal function instead of updating divs directly
+                openBmiResultModal(bmi.toFixed(2), category, recommendedCalories.toFixed(0), goal);
             });
         }
     }
 }
+
+/**
+ * Opens a modal to display BMI results and calorie recommendation.
+ * @param {string} bmi - The calculated BMI value.
+ * @param {string} category - The BMI category.
+ * @param {string} recommendedKcal - The recommended daily calorie intake.
+ * @param {string} goal - The user's goal (maintain, lose, gain).
+ */
+function openBmiResultModal(bmi, category, recommendedKcal, goal) {
+    // Remove any existing modal to prevent duplicates
+    const existingModal = document.getElementById('bmiResultModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+
+    const modal = document.createElement('div');
+    modal.id = 'bmiResultModal';
+    modal.classList.add('modal-overlay'); // Use existing modal overlay style
+
+    let goalText = '';
+    if (goal === 'lose') {
+        goalText = 'Abnehmen';
+    } else if (goal === 'maintain') {
+        goalText = 'Halten';
+    } else if (goal === 'gain') {
+        goalText = 'Zunehmen';
+    }
+
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold">BMI & Kalorienempfehlung</h2>
+                <button id="closeBmiModalButton" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+            </div>
+            <div class="space-y-3 text-center">
+                <p class="text-lg font-bold" style="font-size: 2rem; padding-top: 2rem;">Dein BMI: ${bmi}</p>
+                <p class="text-base">Kategorie: ${category}</p>
+                <p class="text-base font-semibold text-[#9FB8DF] mb-40">Zum ${goalText} wird ein Ziel von ca. ${recommendedKcal} kcal pro Tag empfohlen.</p>
+            </div>
+            <div class="flex justify-end space-x-4 mt-6">
+                <button id="discardBmiButton" class="add-button px-4 py-2 bg-transparent text-red-500 border border-red-500 hover:bg-red-500 hover:text-white">Verwerfen</button>
+                <button id="applyBmiButton" class="add-button px-4 py-2">Übernehmen</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    // Add event listeners for the modal buttons
+    document.getElementById('closeBmiModalButton').addEventListener('click', () => {
+        modal.remove();
+    });
+
+    document.getElementById('discardBmiButton').addEventListener('click', () => {
+        modal.remove();
+    });
+
+    document.getElementById('applyBmiButton').addEventListener('click', () => {
+        // Apply the recommended calorie goal
+        calorieGoal = parseInt(recommendedKcal);
+        overviewCalorieGoalDisplay.textContent = `Ziel ${calorieGoal} kcal`; // Update display on overview page
+        
+        // Show a success message
+        const successMessageBox = document.createElement('div');
+        successMessageBox.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            text-align: center;
+        `;
+        successMessageBox.innerHTML = `
+            <p>Neues Kalorienziel (${calorieGoal} kcal) übernommen!</p>
+            <button onclick="this.parentNode.remove()" style="margin-top: 10px; padding: 8px 15px; background-color: #9FB8DF; color: white; border: none; border-radius: 5px; cursor: pointer;">OK</button>
+        `;
+        document.body.appendChild(successMessageBox);
+
+        modal.remove(); // Close the BMI result modal
+    });
+}
+
 
 /**
  * Initialisiert die Elemente und Event-Listener für die Einstellungen.
@@ -867,26 +951,27 @@ function renderWaterGlasses() {
 
 // Event listener for the "Add" buttons (on Today page)
 addButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        const messageBox = document.createElement('div');
-        messageBox.style.cssText = `
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-            text-align: center;
-        `;
-        messageBox.innerHTML = `
-            <p>Hier würde ein Formular zum Hinzufügen von Produkten erscheinen.</p>
-            <button onclick="this.parentNode.remove()" style="margin-top: 10px; padding: 8px 15px; background-color: #9FB8DF; color: white; border: none; border-radius: 5px; cursor: pointer;">OK</button>
-        `;
-        document.body.appendChild(messageBox);
-    });
+    // Removed the modal display for "Add" buttons as per user request
+    // button.addEventListener('click', () => {
+    //     const messageBox = document.createElement('div');
+    //     messageBox.style.cssText = `
+    //         position: fixed;
+    //         top: 50%;
+    //         left: 50%;
+    //         transform: translate(-50%, -50%);
+    //         background-color: white;
+    //         padding: 20px;
+    //         border-radius: 10px;
+    //         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    //         z-index: 1000;
+    //         text-align: center;
+    //     `;
+    //     messageBox.innerHTML = `
+    //         <p>Hier würde ein Formular zum Hinzufügen von Produkten erscheinen.</p>
+    //         <button onclick="this.parentNode.remove()" style="margin-top: 10px; padding: 8px 15px; background-color: #9FB8DF; color: white; border: none; border-radius: 5px; cursor: pointer;">OK</button>
+    //     `;
+    //     document.body.appendChild(messageBox);
+    // });
 });
 
 // Event listener for the navigation bar
@@ -900,7 +985,7 @@ navItems.forEach(item => {
 });
 
 /**
- * Initializes elements and event listeners for the Overview page.
+ * Initialisiert Elemente und Event-Listener für die Overview page.
  */
 function initializeOverviewPage() {
     if (!prevMonthButton) { // Initialize only once
@@ -1094,8 +1179,20 @@ function updateDailySummary(date) {
                 listItem.appendChild(nameSpan);
 
                 const detailsDiv = document.createElement('div');
-                // Changed 'gap-x-4' to 'justify-around' for space-around effect
-                detailsDiv.classList.add('flex', 'flex-wrap', 'justify-around', 'gap-y-1', 'text-sm', 'text-gray-700', 'mt-1', 'md:mt-0', 'md:ml-auto');
+                // Updated classes for detailsDiv:
+                detailsDiv.classList.add(
+                    'flex',
+                    'flex-wrap',
+                    'justify-around', // For mobile: space-around
+                    'gap-y-1',
+                    'text-sm',
+                    'text-gray-700',
+                    'mt-1',
+                    'md:mt-0',
+                    'md:ml-auto',
+                    'md:justify-start', // For desktop: justify-start
+                    'md:gap-x-8' // For desktop: larger horizontal gap
+                );
 
                 // Helper function to create detail spans without labels
                 detailsDiv.appendChild(createValueSpan(entry.kcal, 'bg-gray-200', ' kcal'));
