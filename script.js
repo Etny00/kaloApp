@@ -141,6 +141,44 @@ function applyDarkMode(enable) {
     }
 }
 
+// Function to save daily food entries to local storage
+function saveDailyFoodEntriesToLocalStorage() {
+    try {
+        localStorage.setItem('userDailyFoodEntries', JSON.stringify(dailyFoodEntries));
+    } catch (error) {
+        console.error('Error saving daily food entries to local storage:', error);
+    }
+}
+
+// Function to load daily food entries from local storage
+function loadDailyFoodEntriesFromLocalStorage() {
+    const storedEntries = localStorage.getItem('userDailyFoodEntries');
+    if (storedEntries) {
+        try {
+            const parsedEntries = JSON.parse(storedEntries);
+            if (parsedEntries && typeof parsedEntries === 'object') {
+                // Clear existing mock data from the global object
+                Object.keys(dailyFoodEntries).forEach(key => delete dailyFoodEntries[key]);
+                // Assign loaded entries to the global object
+                Object.assign(dailyFoodEntries, parsedEntries);
+                console.log('Daily food entries loaded from local storage.');
+            } else {
+                // Handles null from JSON.parse or non-object data
+                console.warn('Stored daily food entries format is invalid or null. Using predefined mock data and saving it.');
+                saveDailyFoodEntriesToLocalStorage(); // Persist current mock data
+            }
+        } catch (error) {
+            console.error('Error parsing daily food entries from local storage:', error);
+            // If parsing fails, use predefined mock data and save it
+            saveDailyFoodEntriesToLocalStorage(); // Persist current mock data
+        }
+    } else {
+        // No data in local storage, use predefined mock data and save it
+        console.log('No daily food entries in local storage. Using predefined mock data and saving it.');
+        saveDailyFoodEntriesToLocalStorage(); // Persist current mock data
+    }
+}
+
 function saveDarkModePreference(enable) {
     localStorage.setItem('darkModeEnabled', enable);
 }
@@ -427,19 +465,9 @@ async function initializeMealsPage() {
         saveProductEntryButton = document.getElementById('saveProductEntryButton');
         deleteProductEntryButton = document.getElementById('deleteProductEntryButton');
 
-        try {
-            const response = await fetch('base_products.json');
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
-            const data = await response.json();
-            products = data.map(product => ({
-                ...product,
-                id: product.Produktname.toLowerCase().replace(/\s/g, '-') + '-' + Math.random().toString(36).substr(2, 9) 
-            }));
-            renderProductTable();
-        } catch (error) {
-            console.error('Error loading products:', error);
-            alert(`Fehler beim Laden der Produkte: ${error.message}.\nStellen Sie sicher, dass 'base_products.json' im selben Ordner wie 'index.html' liegt.`);
-        }
+        // Load products from local storage or fallback to JSON
+        await loadProductsFromLocalStorage(); 
+        renderProductTable(); // Render the table with loaded products
 
         if (saveProductButton) saveProductButton.addEventListener('click', saveProduct);
         if (productSearchInput) productSearchInput.addEventListener('input', () => { currentPage = 1; renderProductTable(); });
@@ -531,7 +559,10 @@ function saveProduct() {
             "Fett (g)": productFatInput.value.trim() || "0",
             "Portionsgröße (g/ml)": productPortionInput.value.trim() || "N/A"
         };
-        products.push(newProduct); currentPage = 1; renderProductTable();
+        products.push(newProduct); 
+        saveProductsToLocalStorage(); // Save to local storage
+        currentPage = 1; 
+        renderProductTable();
         [productNameInput, productKcalInput, productCarbsInput, productProteinInput, productFatInput, productPortionInput].forEach(i => i.value = '');
         alert(`"${name}" erfolgreich gespeichert!`);
     } else {
@@ -707,15 +738,23 @@ function saveEditedFoodEntry(originalFoodEntry, dateKey) {
             fat: parseFloat(modalFatInput.value) || 0,
             portion: parseFloat(modalPortionInput.value) || 0
         };
-        renderCalendar(currentCalendarDate); updateDailySummary(selectedCalendarDate); closeFoodDetailModal();
+        saveDailyFoodEntriesToLocalStorage(); // Save to local storage
+        renderCalendar(currentCalendarDate); 
+        updateDailySummary(selectedCalendarDate); 
+        closeFoodDetailModal();
         alert("Eintrag erfolgreich gespeichert!");
     } else alert("Fehler: Eintrag nicht gefunden.");
 }
 
 function deleteFoodEntry(foodEntryToDelete, dateKey) {
     if (confirm(`Möchtest du "${foodEntryToDelete.name}" wirklich löschen?`)) {
-        if (dailyFoodEntries[dateKey]) dailyFoodEntries[dateKey] = dailyFoodEntries[dateKey].filter(e => e.id !== foodEntryToDelete.id);
-        renderCalendar(currentCalendarDate); updateDailySummary(selectedCalendarDate); closeFoodDetailModal();
+        if (dailyFoodEntries[dateKey]) {
+            dailyFoodEntries[dateKey] = dailyFoodEntries[dateKey].filter(e => e.id !== foodEntryToDelete.id);
+            saveDailyFoodEntriesToLocalStorage(); // Save to local storage
+        }
+        renderCalendar(currentCalendarDate); 
+        updateDailySummary(selectedCalendarDate); 
+        closeFoodDetailModal();
         alert(`"${foodEntryToDelete.name}" wurde gelöscht.`);
     }
 }
@@ -744,7 +783,9 @@ function saveEditedProduct() {
         products[index]['Eiweiß (g)'] = parseFloat(modalProductProteinInput.value) || 0;
         products[index]['Fett (g)'] = parseFloat(modalProductFatInput.value) || 0;
         products[index]['Portionsgröße (g/ml)'] = modalProductPortionInput.value.trim();
-        renderProductTable(); closeProductDetailModal();
+        saveProductsToLocalStorage(); // Save to local storage
+        renderProductTable(); 
+        closeProductDetailModal();
         alert(`"${currentEditingProduct.Produktname}" erfolgreich gespeichert!`);
     } else alert("Fehler: Produkt nicht gefunden.");
 }
@@ -753,7 +794,10 @@ function deleteProductFromModal() {
     if (!currentEditingProduct) return;
     if (confirm(`Möchtest du "${currentEditingProduct.Produktname}" wirklich löschen?`)) {
         products = products.filter(p => p.id !== currentEditingProduct.id);
-        currentPage = 1; renderProductTable(); closeProductDetailModal();
+        saveProductsToLocalStorage(); // Save to local storage
+        currentPage = 1; 
+        renderProductTable(); 
+        closeProductDetailModal();
         alert(`"${currentEditingProduct.Produktname}" wurde gelöscht.`);
     }
 }
@@ -761,5 +805,61 @@ function deleteProductFromModal() {
 document.addEventListener('DOMContentLoaded', () => {
     updateWaterDisplay();
     loadDarkModePreference(); // Load dark mode preference first
+    loadDailyFoodEntriesFromLocalStorage(); // Load daily food entries
     showPage('today-page'); // Then show the default page
 });
+
+// Function to save products to local storage
+function saveProductsToLocalStorage() {
+    try {
+        localStorage.setItem('userProducts', JSON.stringify(products));
+    } catch (error) {
+        console.error('Error saving products to local storage:', error);
+    }
+}
+
+// Function to load products from local storage or fallback to JSON file
+async function loadProductsFromLocalStorage() {
+    try {
+        const storedProducts = localStorage.getItem('userProducts');
+        if (storedProducts) {
+            products = JSON.parse(storedProducts);
+            if (!Array.isArray(products)) { // Basic validation
+                console.warn('Stored products format is invalid, falling back to JSON.');
+                throw new Error('Invalid data format in localStorage');
+            }
+            console.log('Products loaded from local storage.');
+            return; // Successfully loaded from local storage
+        }
+        // No products in local storage, fetch from JSON
+        console.log('No products in local storage, fetching from base_products.json');
+        await fetchAndSaveBaseProducts();
+    } catch (error) {
+        console.error('Error loading products from local storage:', error);
+        // Fallback to fetching from JSON if local storage loading fails
+        console.log('Falling back to fetching from base_products.json due to error.');
+        await fetchAndSaveBaseProducts();
+    }
+}
+
+// Helper function to fetch base products and save them
+async function fetchAndSaveBaseProducts() {
+    try {
+        const response = await fetch('base_products.json');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
+        }
+        const data = await response.json();
+        products = data.map(product => ({
+            ...product,
+            id: product.Produktname.toLowerCase().replace(/\s/g, '-') + '-' + Math.random().toString(36).substr(2, 9)
+        }));
+        console.log('Products loaded from base_products.json');
+        saveProductsToLocalStorage(); // Save the fetched products to local storage
+    } catch (error) {
+        console.error('Error fetching or processing base_products.json:', error);
+        // If base_products.json also fails, initialize with an empty array or handle as appropriate
+        products = []; 
+        alert(`Fehler beim Laden der Basisprodukte: ${error.message}.\nDie Produktliste ist möglicherweise leer.`);
+    }
+}
