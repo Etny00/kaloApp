@@ -1,7 +1,147 @@
+:root {
+    /* Light Theme Colors */
+    --bg-color-light: #F3F4F6; /* gray-100 */
+    --text-color-light: #556985;
+    --text-color-light-secondary: #6B7280; /* gray-500 */
+    --text-color-light-tertiary: #bfcad9;
+    --text-color-link-light: #8395AF;
+    --text-color-link-hover-light: #9FB8DF;
+    --card-bg-light: #FFFFFF;
+    --border-color-light: #E5E7EB; /* gray-200 */
+    --input-border-light: #D1D5DB; /* gray-300 */
+    --accent-color-light: #9FB8DF; /* Main blue */
+    --accent-color-hover-light: #7C95C4; /* Darker blue for hover */
+    --accent-text-color-light: #FFFFFF; /* Text on accent color background */
+    --button-bg-light: transparent;
+    --button-text-color-light: var(--accent-color-light);
+    --button-border-color-light: var(--accent-color-light);
+    --button-hover-bg-light: var(--accent-color-light);
+    --button-hover-text-color-light: var(--accent-text-color-light);
+    --button-disabled-bg-light: #CBD5E1;
+    --button-disabled-text-color-light: #A0AEC0;
+    --button-disabled-border-color-light: #CBD5E1;
+    --nav-bg-light: #FFFFFF;
+    --nav-text-color-light: #556985;
+    --nav-hover-bg-light: #EFF6FF; /* blue-50 */
+    --nav-hover-text-color-light: #7C95C4;
+    --shadow-color-light: rgba(0, 0, 0, 0.1);
+    --shadow-color-nav-light: rgba(0, 0, 0, 0.2);
+    --progress-track-light: #E5E7EB; /* gray-200 */
+    --progress-text-light: #556985;
+    --progress-label-light: var(--text-color-light-tertiary);
+    --input-bg-light: #FFFFFF;
+    --input-text-light: #556985;
+    --input-focus-border-light: var(--accent-color-light);
+    --input-focus-shadow-light: rgba(159, 184, 223, 0.5);
+    --modal-bg-light: #FFFFFF;
+    --modal-overlay-bg-light: rgba(0, 0, 0, 0.6);
+    --table-header-bg-light: #9FB8DF;
+    --table-header-text-light: #FFFFFF;
+    --table-row-odd-bg-light: #FFFFFF;
+    --table-row-even-bg-light: #F9FAFB; /* gray-50 */
+    --table-row-border-light: var(--border-color-light);
+    --action-button-edit-text-light: var(--accent-color-light);
+    --action-button-edit-hover-bg-light: #DBEAFE; /* blue-100 */
+    --action-button-delete-text-light: #EF4444; /* red-500 */
+    --action-button-delete-hover-bg-light: #FEE2E2; /* red-100 */
+    --water-glass-bg-light: #EFF6FF; /* blue-50 */
+    --water-glass-icon-light: #C0D1ED; /* text-blue-300 */
+    --water-glass-filled-bg-light: #BFDBFE; /* blue-200 */
+    --water-glass-filled-icon-light: #9FB8DF; /* text-blue-400 */
+    --calendar-day-bg-light: #F0F8FF;
+    --calendar-day-text-light: var(--text-color-light);
+    --calendar-day-hover-bg-light: var(--accent-color-light);
+    --calendar-day-hover-text-light: var(--accent-text-color-light);
+    --calendar-selected-day-bg-light: var(--accent-color-light);
+    --calendar-selected-day-text-light: var(--accent-text-color-light);
+    --calendar-nav-button-bg-light: var(--accent-color-light);
+    --calendar-nav-button-text-light: var(--accent-text-color-light);
+    --calendar-nav-button-hover-bg-light: var(--accent-color-hover-light);
+    --icon-neutral-color-light: #6B7280; /* gray-500 */
+    --icon-neutral-hover-color-light: #4B5563; /* gray-600 */
+
+    /* Specific Legend Colors */
+    --legend-blue: #9FB8DF;
+    --legend-green: #D4EAE4;
+    --legend-yellow: #DED79F;
+    --legend-gray: #E5E7EB; /* For progress circle track & other grays */
+    --legend-purple: #C084FC; /* Existing purple for portion */
+
+    /* Dark Theme Colors - Gentle & Comfortable Palette */
+    --bg-color-dark: #111827; /* gray-900 */
+    --text-color-dark: #D1D5DB; /* gray-300 */
+    --text-color-dark-secondary: #9CA3AF; /* gray-400 */
+    --text-color-dark-tertiary: #6B7280; /* gray-500 */
+    --text-color-link-dark: #A5B4FC; /* lighter blue for dark */
+    --text-color-link-hover-dark: #C7D2FE; /* even lighter blue */
+    --card-bg-dark: #1F2937; /* gray-800 */
+    --border-color-dark: #374151; /* gray-700 */
+    --input-border-dark: #4B5563; /* gray-600 */
+    --accent-color-dark: #A5B4FC; /* lighter blue for dark */
+    --accent-color-hover-dark: #818CF8; /* indigo-400 for hover */
+    --accent-text-color-dark: #111827; /* Dark text for light accent backgrounds */
+    --button-bg-dark: transparent;
+    --button-text-color-dark: var(--accent-color-dark);
+    --button-border-color-dark: var(--accent-color-dark);
+    --button-hover-bg-dark: var(--accent-color-dark);
+    --button-hover-text-color-dark: var(--accent-text-color-dark);
+    --button-disabled-bg-dark: #374151; /* gray-700 */
+    --button-disabled-text-color-dark: #9CA3AF; /* gray-400 */
+    --button-disabled-border-color-dark: #4B5563; /* gray-600 */
+    --nav-bg-dark: #1F2937; /* gray-800 */
+    --nav-text-color-dark: #D1D5DB; /* gray-300 */
+    --nav-hover-bg-dark: #374151; /* gray-700 */
+    --nav-hover-text-color-dark: var(--accent-color-dark);
+    --shadow-color-dark: rgba(0, 0, 0, 0.5); /* More pronounced for depth */
+    --shadow-color-nav-dark: rgba(0, 0, 0, 0.7);
+    --progress-track-dark: #4B5563; /* gray-600 */
+    --progress-text-dark: #D1D5DB; /* gray-300 */
+    --progress-label-dark: var(--text-color-dark-secondary);
+    --input-bg-dark: #374151; /* gray-700 */
+    --input-text-dark: #D1D5DB; /* gray-300 */
+    --input-focus-border-dark: var(--accent-color-dark);
+    --input-focus-shadow-dark: rgba(165, 180, 252, 0.2); /* Adjusted shadow for dark */
+    --modal-bg-dark: #1F2937; /* gray-800 */
+    --modal-overlay-bg-dark: rgba(0, 0, 0, 0.8);
+    --table-header-bg-dark: var(--accent-color-dark);
+    --table-header-text-dark: var(--accent-text-color-dark);
+    --table-row-odd-bg-dark: #1F2937; /* gray-800 */
+    --table-row-even-bg-dark: #374151; /* gray-700 */
+    --table-row-border-dark: var(--border-color-dark);
+    --action-button-edit-text-dark: var(--accent-color-dark);
+    --action-button-edit-hover-bg-dark: #374151; /* gray-700 */
+    --action-button-delete-text-dark: #FCA5A5; /* red-300 */
+    --action-button-delete-hover-bg-dark: #7f1d1d; /* red-900 */
+    --water-glass-bg-dark: #374151; /* gray-700 */
+    --water-glass-icon-dark: #6B7280; /* gray-500 */
+    --water-glass-filled-bg-dark: #4A5568; /* gray-600 */
+    --water-glass-filled-icon-dark: var(--accent-color-dark);
+    --calendar-day-bg-dark: #374151; /* gray-700 */
+    --calendar-day-text-dark: var(--text-color-dark);
+    --calendar-day-hover-bg-dark: var(--accent-color-dark);
+    --calendar-day-hover-text-dark: var(--accent-text-color-dark);
+    --calendar-selected-day-bg-dark: var(--accent-color-dark);
+    --calendar-selected-day-text-dark: var(--accent-text-color-dark);
+    --calendar-nav-button-bg-dark: var(--accent-color-dark);
+    --calendar-nav-button-text-dark: var(--accent-text-color-dark);
+    --calendar-nav-button-hover-bg-dark: var(--accent-color-hover-dark);
+    --icon-neutral-color-dark: #9CA3AF; /* gray-400 */
+    --icon-neutral-hover-color-dark: #D1D5DB; /* gray-300 */
+    
+    /* Specific Legend Colors Dark Mode */
+    --legend-blue-dark: #A5B4FC; 
+    --legend-green-dark: #A7F3D0; 
+    --legend-yellow-dark: #FDE68A; 
+    --legend-gray-dark: #4B5563; 
+    --legend-purple-dark: #D8B4FE;
+}
+
 /* Basic font for the app */
 body {
     font-family: 'Inter', sans-serif;
-    color: #556985; /* Main color for all text */
+    background-color: var(--bg-color-light);
+    color: var(--text-color-light);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Progress circle container style (SVG container) */
@@ -23,11 +163,16 @@ body {
     transform: rotate(-90deg); /* Starts the circle at the top */
 }
 
+/* Base track for progress circles */
+.progress-circle-container svg .progress-bar-track {
+    stroke: var(--progress-track-light);
+}
+
 .progress-circle-container .text-overlay {
     position: absolute;
     text-align: center;
     z-index: 0; /* Ensures text is above SVG */
-    color: #556985; /* Adjusted color for text in the circle */
+    color: var(--progress-text-light);
 }
 
 .progress-circle-container .text-overlay .value {
@@ -38,50 +183,52 @@ body {
 
 .progress-circle-container .text-overlay .label {
     font-size: 1.25rem; /* Adjusted text size */
-    color: #bfcad9;
+    color: var(--progress-label-light);
 }
 
 /* Water glasses style */
 .water-glass {
     width: 40px; /* w-10 */
     height: 40px; /* h-10 */
-    background-color: #EFF6FF; /* Background color of the glass container (lighter) */
+    background-color: var(--water-glass-bg-light);
     border-radius: 0.5rem; /* rounded-lg */
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
 }
 
 .water-glass i { /* Style for the icon in the water glass */
     font-size: 1.5rem; /* Size of the glass icon */
-    color: #C0D1ED; /* Lighter blue for unfilled icons */
+    color: var(--water-glass-icon-light);
+    transition: color 0.2s ease-in-out;
 }
 
 .water-glass.filled {
-    background-color: #BFDBFE; /* Background of the filled glass container */
+    background-color: var(--water-glass-filled-bg-light);
 }
 
 .water-glass.filled i { /* Style for the icon in the filled water glass */
-    color: #9FB8DF; /* Darker blue for filled icons */
+    color: var(--water-glass-filled-icon-light);
 }
 
 /* Navigation bar style */
 .nav-bar {
     position: fixed;
     bottom: 0;
-    background-color: white;
-    box-shadow: 0 -4px 5px rgba(0, 0, 0, 0.2); /* shadow-lg */
+    background-color: var(--nav-bg-light);
+    box-shadow: 0 -4px 5px var(--shadow-color-nav-light);
     border-top-left-radius: 0.75rem; /* rounded-t-xl */
     border-top-right-radius: 0.75rem; /* rounded-t-xl */
-    border-top: 1px solid #f1f1f1;
+    border-top: 1px solid var(--border-color-light);
     padding: 1rem; /* p-4 */
     display: flex;
     justify-content: around; /* justify-around */
     align-items: center;
     width: 100%;
     z-index: 50; /* Changed z-index to 50 */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .nav-item {
@@ -89,16 +236,16 @@ body {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    color: #556985; /* Color of navigation icons */
-    transition: color 0.2s ease-in-out;
+    color: var(--nav-text-color-light);
+    transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
     cursor: pointer;
     padding: 0.5rem;
     border-radius: 0.5rem;
 }
 
 .nav-item:hover {
-    color: #7C95C4; /* Darker blue on hover */
-    background-color: #EFF6FF; /* Lighter background on hover */
+    color: var(--nav-hover-text-color-light);
+    background-color: var(--nav-hover-bg-light);
 }
 
 .nav-item i { /* Style for Font Awesome icons in the navigation */
@@ -113,19 +260,30 @@ body {
 
 /* New colors for the legend */
 .legend-color-blue {
-    background-color: #9FB8DF;
+    background-color: var(--legend-blue);
 }
 .legend-color-green {
-    background-color: #D4EAE4;
+    background-color: var(--legend-green);
 }
 .legend-color-yellow {
-    background-color: #DED79F;
+    background-color: var(--legend-yellow);
+}
+.bg-gray-200 { /* Used for Kcal legend in HTML */
+    background-color: var(--legend-gray);
+}
+.bg-purple-300 { /* Used for Portion legend in HTML */
+    background-color: var(--legend-purple);
 }
 
+
 /* New text color for links on hover */
-.text-color-blue {
-    color: #9FB8DF;
+.text-color-blue { /* This class is used for general link-like text, not just hover */
+    color: var(--text-color-link-light);
 }
+.text-color-blue:hover {
+    color: var(--text-color-link-hover-light);
+}
+
 
 /* Legend style for Donut Chart */
 .legend {
@@ -154,44 +312,45 @@ body {
 
 /* Style for the Add button (now used for all primary actions) */
 .add-button {
-    background-color: transparent; /* Remove background */
-    color: #9FB8DF; /* Blue font color */
+    background-color: var(--button-bg-light);
+    color: var(--button-text-color-light);
     padding: 0.5rem 1rem;
     border-radius: 9999px; /* rounded-full */
     font-size: 0.875rem; /* text-sm */
     font-weight: 500; /* font-medium */
     transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, border-color 0.2s ease-in-out;
-    border: 1px solid #9FB8DF; /* Add a border to make it more prominent */
+    border: 1px solid var(--button-border-color-light);
 }
 
 .add-button:hover {
-    background-color: #9FB8DF; /* Blue background on hover */
-    color: white; /* White text on hover */
+    background-color: var(--button-hover-bg-light);
+    color: var(--button-hover-text-color-light);
+    border-color: var(--button-hover-bg-light); /* Ensure border matches background on hover */
 }
 
 /* Style for edit/delete buttons in table */
 .action-button {
     padding: 0.5rem;
     border-radius: 0.25rem;
-    transition: background-color 0.2s ease-in-out;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
 }
 
 .action-button.edit {
-    color: #9FB8DF; /* Blue for edit */
+    color: var(--action-button-edit-text-light);
     background-color: transparent;
 }
 
 .action-button.edit:hover {
-    background-color: #DBEAFE; /* Light blue background on hover */
+    background-color: var(--action-button-edit-hover-bg-light);
 }
 
 .action-button.delete {
-    color: #EF4444; /* Red for delete */
+    color: var(--action-button-delete-text-light);
     background-color: transparent;
 }
 
 .action-button.delete:hover {
-    background-color: #FEE2E2; /* Light red background on hover */
+    background-color: var(--action-button-delete-hover-bg-light);
 }
 
 
@@ -253,14 +412,14 @@ body {
 }
 
 .product-table th {
-    background-color: #9FB8DF; /* Blue header background */
-    color: white;
+    background-color: var(--table-header-bg-light);
+    color: var(--table-header-text-light);
     font-weight: 600;
 }
 
 /* Add border-bottom to table rows instead of cells */
 .product-table tr {
-    border-bottom: 1px solid #E5E7EB; /* Light gray border for rows */
+    border-bottom: 1px solid var(--table-row-border-light);
 }
 
 /* Remove border from the last row to avoid double border at the bottom of the table */
@@ -270,11 +429,11 @@ body {
 
 
 .product-table tbody tr:nth-child(odd) {
-    background-color: #FFFFFF; /* White background for odd rows */
+    background-color: var(--table-row-odd-bg-light);
 }
 
 .product-table tbody tr:nth-child(even) {
-    background-color: #F9FAFB; /* Light gray background for even rows */
+    background-color: var(--table-row-even-bg-light);
 }
 
 /* New styles for the product table content to mimic consumedFoodList */
@@ -291,7 +450,7 @@ body {
     justify-content: space-around; /* Apply space-around for mobile */
     gap: 0.75rem; /* Space between individual detail items */
     font-size: 0.875rem; /* text-sm */
-    color: #6B7280; /* text-gray-700 */
+    color: var(--text-color-light-secondary);
     margin-top: 0.25rem; /* mt-1 */
 }
 
@@ -299,11 +458,11 @@ body {
 .product-table-cell-content > span {
     cursor: pointer;
     font-weight: bold;
-    color: #8395AF; /* Blue color for links */
+    color: var(--text-color-link-light);
 }
 
 .product-table-cell-content > span:hover {
-    color: #9FB8DF; /* Darker blue on hover */
+    color: var(--text-color-link-hover-light);
 }
 
 
@@ -321,38 +480,39 @@ body {
     padding: 0.5rem 1rem; /* Adjusted padding */
     font-size: 0.875rem;
     border-radius: 9999px; /* rounded-full like add-button */
-    background-color: transparent; /* Changed to transparent */
-    color: #9FB8DF; /* Changed to blue */
-    border: 1px solid #9FB8DF; /* Added blue border */
+    background-color: var(--button-bg-light);
+    color: var(--button-text-color-light);
+    border: 1px solid var(--button-border-color-light);
     cursor: pointer;
     transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, border-color 0.2s ease-in-out; /* Added color and border-color to transition */
     font-weight: 500; /* Added font-medium */
 }
 
 .pagination-controls button:hover:not(:disabled) {
-    background-color: #9FB8DF; /* Blue background on hover */
-    color: white; /* White text on hover */
-    border-color: #9FB8DF; /* Keep border color consistent on hover */
+    background-color: var(--button-hover-bg-light);
+    color: var(--button-hover-text-color-light);
+    border-color: var(--button-hover-bg-light);
 }
 
 .pagination-controls button:disabled {
-    background-color: #CBD5E1; /* Gray background for disabled */
-    color: #A0AEC0; /* Lighter gray text for disabled */
-    border-color: #CBD5E1; /* Gray border for disabled */
+    background-color: var(--button-disabled-bg-light);
+    color: var(--button-disabled-text-color-light);
+    border-color: var(--button-disabled-border-color-light);
     cursor: not-allowed;
 }
 
 .pagination-info {
     font-size: 0.875rem;
-    color: #556985;
+    color: var(--text-color-light);
 }
 
 .items-per-page-select {
     padding: 0.4rem;
-    border: 1px solid #D1D5DB;
+    border: 1px solid var(--input-border-light);
     border-radius: 0.25rem;
     font-size: 0.875rem;
-    color: #556985;
+    color: var(--input-text-light);
+    background-color: var(--input-bg-light);
 }
 
 /* Mobile specific table adjustments */
@@ -466,28 +626,28 @@ body {
 
 /* Style for non-selected actual day numbers */
 #calendarGrid div[data-date].non-selected-day {
-    background-color: #F0F8FF; /* Very light blue for non-selected days */
-    color: #556985; /* Default text color */
+    background-color: var(--calendar-day-bg-light);
+    color: var(--calendar-day-text-light);
     cursor: pointer;
     padding: 0; /* Let flexbox handle centering */
     font-size: 1.0rem; /* Adjusted font size as requested */
 }
 
 #calendarGrid div[data-date].non-selected-day:hover {
-    background-color: #9FB8DF; /* Typical blue on hover for non-selected days */
-    color: white; /* White text on hover as requested */
+    background-color: var(--calendar-day-hover-bg-light);
+    color: var(--calendar-day-hover-text-light);
 }
 
 /* Style for the selected day */
 #calendarGrid div[data-date].selected-day { /* New class for selected day with higher specificity */
-    background-color: #9FB8DF; /* Darker blue for selected day - stays distinct */
-    color: white; /* White text for better contrast */
+    background-color: var(--calendar-selected-day-bg-light);
+    color: var(--calendar-selected-day-text-light);
     font-weight: bold;
 }
 
 #calendarGrid div[data-date].selected-day:hover {
-    background-color: #9FB8DF; /* Keeps the darker blue on hover for selected day */
-    color: white; /* White text on hover */
+    background-color: var(--calendar-selected-day-bg-light); /* Keep selected style on hover */
+    color: var(--calendar-selected-day-text-light);
 }
 
 /* Calendar Navigation Buttons Styling */
@@ -498,8 +658,8 @@ body {
     width: 36px; /* Fixed width for circular shape */
     height: 36px; /* Fixed height for circular shape */
     border-radius: 9999px; /* Make it circular */
-    background-color: #9FB8DF; /* App's typical blue */
-    color: white; /* White text/icon */
+    background-color: var(--calendar-nav-button-bg-light);
+    color: var(--calendar-nav-button-text-light);
     font-size: 1.25rem; /* Larger icon/text for buttons */
     font-weight: bold;
     border: none; /* Remove default border */
@@ -508,7 +668,7 @@ body {
 }
 
 .calendar-nav-button:hover {
-    background-color: #7C95C4; /* Darker blue on hover */
+    background-color: var(--calendar-nav-button-hover-bg-light);
 }
 
 /* Desktop specific adjustments for calendar days */
@@ -529,7 +689,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black background */
+    background-color: var(--modal-overlay-bg-light);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -537,10 +697,10 @@ body {
 }
 
 .modal-content {
-    background-color: white;
+    background-color: var(--modal-bg-light);
     padding: 1.5rem;
     border-radius: 0.75rem; /* rounded-xl */
-    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); /* shadow-xl */
+    box-shadow: 0 10px 15px var(--shadow-color-light);
     width: 90%;
     max-width: 400px; /* Max width for the modal */
     position: relative;
@@ -548,14 +708,16 @@ body {
 
 .modal-content input[type="number"],
 .modal-content input[type="text"] {
-    border-color: #D1D5DB;
+    border: 1px solid var(--input-border-light);
+    background-color: var(--input-bg-light);
+    color: var(--input-text-light);
     transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
 .modal-content input[type="number"]:focus,
 .modal-content input[type="text"]:focus {
-    border-color: #9FB8DF;
-    box-shadow: 0 0 0 3px rgba(159, 184, 223, 0.5);
+    border-color: var(--input-focus-border-light);
+    box-shadow: 0 0 0 3px var(--input-focus-shadow-light);
 }
 
 .modal-content button {
@@ -570,31 +732,20 @@ body.modal-open {
 
 /* Meal entry in today page */
 .meal-entry {
-    background-color: white;
+    background-color: var(--card-bg-light); /* Use card-bg for consistency */
     border-radius: 0.75rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px var(--shadow-color-light);
     padding: 1rem;
     margin-bottom: 1rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
 }
 
 .meal-entry:hover {
-    background-color: #f0f0f0; /* Slightly darker on hover */
-}
-
-/* Style for water glasses */
-.water-glass {
-    color: #D1D5DB; /* Empty glass color */
-    font-size: 2.5rem; /* Large icon */
-    cursor: pointer;
-    transition: color 0.2s ease-in-out;
-}
-
-.water-glass.filled {
-    color: #9FB8DF; /* Filled glass color */
+    background-color: var(--bg-color-light); /* Use main bg for hover, slightly darker */
 }
 
 /* For product table, ensure proper spacing for icons */
@@ -606,7 +757,7 @@ body.modal-open {
 .product-actions button {
     background: none;
     border: none;
-    color: #6B7280; /* Neutral icon color */
+    color: var(--icon-neutral-color-light);
     cursor: pointer;
     font-size: 1.1rem;
     padding: 0.25rem;
@@ -614,19 +765,24 @@ body.modal-open {
 }
 
 .product-actions button:hover {
-    color: #4B5563; /* Darker on hover */
+    color: var(--icon-neutral-hover-color-light);
 }
 
 /* Specific button style for add food entry on meals page */
 .add-food-entry-button {
-    background-color: #9FB8DF;
-    color: white;
+    background-color: var(--accent-color-light);
+    color: var(--accent-text-color-light);
     padding: 0.5rem 1rem;
     border-radius: 0.5rem;
     font-weight: 600;
     width: 100%; /* Make it full width */
     text-align: center;
     margin-top: 1rem;
+    border: none;
+    transition: background-color 0.2s ease-in-out;
+}
+.add-food-entry-button:hover {
+    background-color: var(--accent-color-hover-light);
 }
 
 /* Style for message box confirmation */
@@ -635,10 +791,11 @@ body.modal-open {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: white;
+    background-color: var(--modal-bg-light);
+    color: var(--text-color-light);
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px var(--shadow-color-light);
     z-index: 1000;
     text-align: center;
 }
@@ -651,9 +808,9 @@ body.modal-open {
 }
 
 .food-entry-box {
-    background-color: white;
+    background-color: var(--card-bg-light); /* Use card-bg for consistency */
     border-radius: 0.75rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px var(--shadow-color-light);
     padding: 1rem;
     width: calc(50% - 0.5rem); /* Two items per row with gap */
     box-sizing: border-box; /* Include padding in width */
@@ -662,5 +819,304 @@ body.modal-open {
 }
 
 .food-entry-box:hover {
-    background-color: #f0f0f0;
+    background-color: var(--bg-color-light); /* Use main bg for hover */
 }
+
+
+/* Tailwind utility class overrides for general consistency */
+.bg-white { background-color: var(--card-bg-light); }
+.text-gray-700 { color: var(--text-color-light); } /* Assuming this is primary text */
+.text-gray-500 { color: var(--text-color-light-secondary); }
+.border-gray-300 { border-color: var(--input-border-light); }
+.shadow-lg { box-shadow: 0 10px 15px -3px var(--shadow-color-light), 0 4px 6px -2px var(--shadow-color-light); }
+.shadow-md { box-shadow: 0 4px 6px -1px var(--shadow-color-light), 0 2px 4px -1px var(--shadow-color-light); }
+
+/* ------------------------- DARK MODE STYLES ------------------------- */
+
+body.dark-mode {
+    background-color: var(--bg-color-dark);
+    color: var(--text-color-dark);
+}
+
+body.dark-mode .bg-white { background-color: var(--card-bg-dark); }
+body.dark-mode .text-gray-700 { color: var(--text-color-dark); }
+body.dark-mode .text-gray-500 { color: var(--text-color-dark-secondary); }
+body.dark-mode .border-gray-300 { border-color: var(--input-border-dark); }
+body.dark-mode .shadow-lg { box-shadow: 0 10px 15px -3px var(--shadow-color-dark), 0 4px 6px -2px var(--shadow-color-dark); }
+body.dark-mode .shadow-md { box-shadow: 0 4px 6px -1px var(--shadow-color-dark), 0 2px 4px -1px var(--shadow-color-dark); }
+
+/* Specific component dark mode overrides */
+
+body.dark-mode .progress-circle-container svg .progress-bar-track {
+    stroke: var(--progress-track-dark);
+}
+/* Progress arc colors for dark mode */
+body.dark-mode .progress-circle-container svg circle[stroke="#DED79F"] { stroke: var(--legend-yellow-dark); } /* Corresponds to var(--legend-yellow-light) */
+body.dark-mode .progress-circle-container svg circle[stroke="#D4EAE4"] { stroke: var(--legend-green-dark); } /* Corresponds to var(--legend-green-light) */
+body.dark-mode .progress-circle-container svg circle[stroke="#9FB8DF"] { stroke: var(--legend-blue-dark); } /* Corresponds to var(--legend-blue-light) */
+body.dark-mode .progress-circle-container svg circle[stroke="#C084FC"] { stroke: var(--legend-purple-dark); } /* Corresponds to var(--legend-purple-light) */
+body.dark-mode .progress-circle-container svg circle[stroke="#E5E7EB"] { stroke: var(--legend-gray-dark); } /* Corresponds to var(--legend-gray-light) for kcal used in HTML */
+
+
+body.dark-mode .progress-circle-container .text-overlay {
+    color: var(--progress-text-dark);
+}
+body.dark-mode .progress-circle-container .text-overlay .label {
+    color: var(--progress-label-dark);
+}
+
+body.dark-mode .water-glass {
+    background-color: var(--water-glass-bg-dark);
+}
+body.dark-mode .water-glass i {
+    color: var(--water-glass-icon-dark);
+}
+body.dark-mode .water-glass.filled {
+    background-color: var(--water-glass-filled-bg-dark);
+}
+body.dark-mode .water-glass.filled i {
+    color: var(--water-glass-filled-icon-dark);
+}
+
+body.dark-mode .nav-bar {
+    background-color: var(--nav-bg-dark);
+    box-shadow: 0 -4px 5px var(--shadow-color-nav-dark);
+    border-top-color: var(--border-color-dark);
+}
+body.dark-mode .nav-item {
+    color: var(--nav-text-color-dark);
+}
+body.dark-mode .nav-item:hover {
+    color: var(--nav-hover-text-color-dark);
+    background-color: var(--nav-hover-bg-dark);
+}
+
+body.dark-mode .legend-color-blue { background-color: var(--legend-blue-dark); }
+body.dark-mode .legend-color-green { background-color: var(--legend-green-dark); }
+body.dark-mode .legend-color-yellow { background-color: var(--legend-yellow-dark); }
+body.dark-mode .bg-gray-200 { background-color: var(--legend-gray-dark); }
+body.dark-mode .bg-purple-300 { background-color: var(--legend-purple-dark); }
+
+
+body.dark-mode .text-color-blue {
+    color: var(--text-color-link-dark);
+}
+body.dark-mode .text-color-blue:hover {
+    color: var(--text-color-link-hover-dark);
+}
+
+body.dark-mode .add-button {
+    background-color: var(--button-bg-dark);
+    color: var(--button-text-color-dark);
+    border-color: var(--button-border-color-dark);
+}
+body.dark-mode .add-button:hover {
+    background-color: var(--button-hover-bg-dark);
+    color: var(--button-hover-text-color-dark);
+    border-color: var(--button-hover-bg-dark);
+}
+
+body.dark-mode .action-button.edit {
+    color: var(--action-button-edit-text-dark);
+}
+body.dark-mode .action-button.edit:hover {
+    background-color: var(--action-button-edit-hover-bg-dark);
+}
+body.dark-mode .action-button.delete {
+    color: var(--action-button-delete-text-dark);
+}
+body.dark-mode .action-button.delete:hover {
+    background-color: var(--action-button-delete-hover-bg-dark);
+}
+
+body.dark-mode .product-table th {
+    background-color: var(--table-header-bg-dark);
+    color: var(--table-header-text-dark);
+}
+body.dark-mode .product-table tr {
+    border-bottom-color: var(--table-row-border-dark);
+}
+body.dark-mode .product-table tbody tr:nth-child(odd) {
+    background-color: var(--table-row-odd-bg-dark);
+}
+body.dark-mode .product-table tbody tr:nth-child(even) {
+    background-color: var(--table-row-even-bg-dark);
+}
+body.dark-mode .product-table-cell-content > span {
+    color: var(--text-color-link-dark);
+}
+body.dark-mode .product-table-cell-content > span:hover {
+    color: var(--text-color-link-hover-dark);
+}
+body.dark-mode .product-details-container {
+    color: var(--text-color-dark-secondary);
+}
+
+body.dark-mode .pagination-controls button {
+    background-color: var(--button-bg-dark);
+    color: var(--button-text-color-dark);
+    border-color: var(--button-border-color-dark);
+}
+body.dark-mode .pagination-controls button:hover:not(:disabled) {
+    background-color: var(--button-hover-bg-dark);
+    color: var(--button-hover-text-color-dark);
+    border-color: var(--button-hover-bg-dark);
+}
+body.dark-mode .pagination-controls button:disabled {
+    background-color: var(--button-disabled-bg-dark);
+    color: var(--button-disabled-text-color-dark);
+    border-color: var(--button-disabled-border-color-dark);
+}
+body.dark-mode .pagination-info {
+    color: var(--text-color-dark);
+}
+body.dark-mode .items-per-page-select {
+    border-color: var(--input-border-dark);
+    color: var(--input-text-dark);
+    background-color: var(--input-bg-dark);
+}
+
+body.dark-mode #calendarGrid > div.font-semibold { /* Weekday headers */
+     color: var(--text-color-dark-secondary);
+}
+body.dark-mode #calendarGrid div[data-date].non-selected-day {
+    background-color: var(--calendar-day-bg-dark);
+    color: var(--calendar-day-text-dark);
+}
+body.dark-mode #calendarGrid div[data-date].non-selected-day:hover {
+    background-color: var(--calendar-day-hover-bg-dark);
+    color: var(--calendar-day-hover-text-dark);
+}
+body.dark-mode #calendarGrid div[data-date].selected-day {
+    background-color: var(--calendar-selected-day-bg-dark);
+    color: var(--calendar-selected-day-text-dark);
+}
+body.dark-mode #calendarGrid div[data-date].selected-day:hover {
+    background-color: var(--calendar-selected-day-bg-dark);
+    color: var(--calendar-selected-day-text-dark);
+}
+body.dark-mode .calendar-nav-button {
+    background-color: var(--calendar-nav-button-bg-dark);
+    color: var(--calendar-nav-button-text-dark);
+}
+body.dark-mode .calendar-nav-button:hover {
+    background-color: var(--calendar-nav-button-hover-bg-dark);
+}
+
+body.dark-mode .modal-overlay {
+    background-color: var(--modal-overlay-bg-dark);
+}
+body.dark-mode .modal-content {
+    background-color: var(--modal-bg-dark);
+    box-shadow: 0 10px 15px var(--shadow-color-dark);
+}
+body.dark-mode .modal-content input[type="number"],
+body.dark-mode .modal-content input[type="text"] {
+    border-color: var(--input-border-dark);
+    background-color: var(--input-bg-dark);
+    color: var(--input-text-dark);
+}
+body.dark-mode .modal-content input[type="number"]:focus,
+body.dark-mode .modal-content input[type="text"]:focus {
+    border-color: var(--input-focus-border-dark);
+    box-shadow: 0 0 0 3px var(--input-focus-shadow-dark);
+}
+/* Ensure placeholder text is also visible in dark mode */
+body.dark-mode input::placeholder {
+    color: var(--text-color-dark-secondary);
+    opacity: 0.7;
+}
+body.dark-mode select { /* Assuming select might exist in modals or forms */
+    background-color: var(--input-bg-dark);
+    color: var(--input-text-dark);
+    border-color: var(--input-border-dark);
+}
+
+body.dark-mode .meal-entry {
+    background-color: var(--card-bg-dark);
+    box-shadow: 0 4px 6px var(--shadow-color-dark);
+    /* border: 1px solid var(--border-color-dark); */ /* Alternative to shadow */
+}
+body.dark-mode .meal-entry:hover {
+    background-color: var(--bg-color-dark); /* Use main bg for hover */
+}
+
+body.dark-mode .product-actions button {
+    color: var(--icon-neutral-color-dark);
+}
+body.dark-mode .product-actions button:hover {
+    color: var(--icon-neutral-hover-color-dark);
+}
+
+body.dark-mode .add-food-entry-button {
+    background-color: var(--accent-color-dark);
+    color: var(--accent-text-color-dark);
+}
+body.dark-mode .add-food-entry-button:hover {
+    background-color: var(--accent-color-hover-dark);
+}
+
+body.dark-mode .message-box {
+    background-color: var(--modal-bg-dark);
+    color: var(--text-color-dark);
+    box-shadow: 0 4px 6px var(--shadow-color-dark);
+}
+
+body.dark-mode .food-entry-box {
+    background-color: var(--card-bg-dark);
+    box-shadow: 0 4px 6px var(--shadow-color-dark);
+    /* border: 1px solid var(--border-color-dark); */
+}
+body.dark-mode .food-entry-box:hover {
+    background-color: var(--bg-color-dark);
+}
+
+/* Ensure FontAwesome icons inherit color correctly in dark mode */
+body.dark-mode .fa-solid {
+     color: inherit; /* This will make them inherit from their parent */
+}
+/* Specific overrides if inherit isn't enough or specific color is needed */
+body.dark-mode .nav-item i, body.dark-mode .nav-item span {
+    /* color is handled by .nav-item color var(--nav-text-color-dark) */
+}
+body.dark-mode .text-blue-600 { /* e.g., BMI recommendation text from index.html */
+    color: var(--accent-color-dark);
+}
+body.dark-mode .text-red-500 { /* e.g., delete buttons text color */
+    color: var(--action-button-delete-text-dark);
+}
+body.dark-mode .border-red-500 { /* e.g., delete buttons border color */
+    border-color: var(--action-button-delete-text-dark);
+}
+/* For buttons that turn text white on hover in light mode, make text dark on light bg in dark mode */
+body.dark-mode .hover\:text-white:hover {
+    color: var(--accent-text-color-dark);
+}
+body.dark-mode .hover\:bg-red-500:hover { /* For delete buttons with bg change on hover */
+    background-color: var(--action-button-delete-text-dark);
+}
+
+/* General text utilities from Tailwind if used */
+body.dark-mode .text-gray-900 { color: var(--text-color-dark) !important; }
+body.dark-mode .text-gray-800 { color: var(--text-color-dark) !important; }
+body.dark-mode .text-gray-600 { color: var(--text-color-dark-secondary) !important; }
+body.dark-mode .text-gray-400 { color: var(--text-color-dark-tertiary) !important; }
+
+body.dark-mode .border-gray-200 { border-color: var(--border-color-dark) !important; }
+
+body.dark-mode .bg-gray-50 { background-color: var(--table-row-even-bg-dark) !important; }
+body.dark-mode .bg-gray-100 { background-color: var(--bg-color-dark) !important; } /* if used as main page bg */
+
+/* Ensure any direct white/black text colors are handled */
+body.dark-mode .text-black { color: var(--text-color-dark) !important; }
+body.dark-mode .text-white { color: var(--text-color-dark) !important; } /* Careful with this, might be for text on dark backgrounds already */
+
+/* For elements that become light on dark background */
+body.dark-mode .text-on-accent {
+    color: var(--accent-text-color-dark);
+}
+
+/* If there are any explicit `stroke` attributes in SVGs other than progress circle that need theming: */
+/* Example: body.dark-mode .some-svg-icon { stroke: var(--icon-neutral-color-dark); } */
+
+[end of style.css]
