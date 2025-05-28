@@ -3,52 +3,37 @@
 // Initial values
 let consumedCalories = 1240; // Updated value
 let calorieGoal = 2000; // Can now be changed
-let waterConsumed = 1.5; // in liters
+let waterConsumed = 0; // Default to 0, will be loaded or set for today
 let waterGoal = 2.5; // in liters, can now be changed
 const glassSize = 0.25; // Size of a water glass in liters (assumption)
 
+// Local Storage Keys
+const userCalorieGoalKey = 'userCalorieGoal';
+const userWaterGoalKey = 'userWaterGoal';
+const userDailyWaterLogKey = 'userDailyWaterLog'; 
+
 // Product data
-let products = []; // This will hold the loaded products from base_products.json
+let products = []; 
 
 // Pagination variables
 let currentPage = 1;
-let itemsPerPage = 25; // Default items per page
+let itemsPerPage = 25; 
 
 // Calendar and Daily Summary Variables
-let currentCalendarDate = new Date(); // Tracks the month/year currently displayed in the calendar
-let selectedCalendarDate = new Date(); // Tracks the specific day selected in the calendar
+let currentCalendarDate = new Date(); 
+let selectedCalendarDate = new Date(); 
 
-// Mock data for daily food entries (Key:YYYY-MM-DD, Value: Array of food objects)
-// Added unique IDs for easier manipulation and mealType
-const dailyFoodEntries = {
-    '2025-05-03': [
-        { id: 'f1', name: 'Haferflocken', kcal: 250, carbs: 40, protein: 10, fat: 5, portion: 100, mealType: 'Frühstück' },
-        { id: 'f2', name: 'Hähnchen mit Reis', kcal: 600, carbs: 60, protein: 40, fat: 20, portion: 300, mealType: 'Mittagessen' },
-        { id: 'f3', name: 'Proteinriegel', kcal: 150, carbs: 15, protein: 20, fat: 3, portion: 50, mealType: 'Snacks' }
-    ],
-    '2025-05-26': [ // Today's mock data
-        { id: 'f4', name: 'Apfel', kcal: 95, carbs: 25, protein: 1, fat: 0, portion: 150, mealType: 'Snacks' },
-        { id: 'f5', name: 'Brot mit Käse', kcal: 300, carbs: 30, protein: 15, fat: 12, portion: 120, mealType: 'Frühstück' },
-        { id: 'f6', name: 'Joghurt', kcal: 120, carbs: 10, protein: 10, fat: 5, portion: 180, mealType: 'Frühstück' }
-    ],
-    '2025-05-10': [
-        { id: 'f7', name: 'Pizza', kcal: 800, carbs: 90, protein: 35, fat: 38, portion: 400, mealType: 'Abendessen' },
-        { id: 'f8', name: 'Cola', kcal: 150, carbs: 38, protein: 0, fat: 0, portion: 330, mealType: 'Snacks' }
-    ],
-    '2025-06-01': [
-        { id: 'f9', name: 'Salat', kcal: 180, carbs: 15, protein: 5, fat: 10, portion: 250, mealType: 'Mittagessen' }
-    ]
-};
+// Data Logs
+const dailyFoodEntries = {}; 
+let dailyWaterLog = {}; 
 
 // DOM elements
-const consumedCaloriesDisplay = document.getElementById('consumedCalories');
+const consumedCaloriesDisplay = document.getElementById('consumedCalories'); 
 const waterAmountDisplay = document.getElementById('waterAmount');
 const waterGlassesContainer = document.getElementById('waterGlassesContainer');
-const addButtons = document.querySelectorAll('.add-button'); // All "Add" buttons (on Today page)
-const navItems = document.querySelectorAll('.nav-item'); // All navigation items
-const pageContents = document.querySelectorAll('.page-content'); // All page contents
-const pageTitle = document.getElementById('pageTitle'); // Dynamic page title
-const overviewCalorieGoalDisplay = document.getElementById('calorieGoal'); // Element for calorie goal on the overview page
+const pageContents = document.querySelectorAll('.page-content'); 
+const pageTitle = document.getElementById('pageTitle'); 
+const overviewCalorieGoalDisplay = document.getElementById('calorieGoal'); 
 
 // BMI Calculator elements
 let calculateBmiButton;
@@ -66,12 +51,12 @@ let calorieRecommendationDiv;
 let newCalorieGoalInput;
 let newWaterGoalInput;
 let saveSettingsButton;
-let darkModeToggle; // Added for Dark Mode
+let darkModeToggle; 
 
 // Meals Page elements
 let productNameInput;
 let productKcalInput;
-let productPortionInput;
+let productPortionInput; 
 let productCarbsInput; 
 let productProteinInput; 
 let productFatInput; 
@@ -94,16 +79,16 @@ let nextMonthButton;
 let currentMonthDisplay;
 let calendarGrid;
 let dailySummaryDate;
-let dailyConsumedCaloriesDisplay;
-let dailyRemainingCaloriesDisplay;
+let dailyConsumedCaloriesDisplay; 
+let dailyRemainingCaloriesDisplay; 
 let dailyCarbsArc; 
 let dailyProteinArc; 
 let dailyFatArc; 
 let consumedFoodList;
 
-// Food Detail Modal elements (for Overview page)
+// Food Detail Modal elements
 let foodDetailModal;
-let closeModalButton;
+let closeModalButton; 
 let modalFoodNameDisplay;
 let modalKcalInput;
 let modalCarbsInput;
@@ -116,19 +101,33 @@ let deleteFoodEntryButton;
 let currentEditingFoodEntry = null; 
 let currentEditingDateKey = null; 
 
-// Product Detail Modal elements (for Meals page)
-let productDetailModal;
-let closeProductModalButton;
+// Product Detail Modal elements
+let productDetailModal; 
+let closeProductModalButton; 
 let modalProductNameDisplay;
 let modalProductKcalInput;
 let modalProductCarbsInput;
 let modalProductProteinInput;
 let modalProductFatInput;
-let modalProductPortionInput;
+let modalProductPortionInput_mealsPage; 
 let saveProductEntryButton;
 let deleteProductEntryButton;
 
 let currentEditingProduct = null; 
+
+// Add Product to Meal Modal elements
+let addProductToMealModal;
+let closeAddProductToMealModalButton;
+let modalProductSearchInput;
+let modalProductList;
+let modalProductPortionInput_addToMeal; 
+let cancelAddProductToMealButton;
+let confirmAddProductToMealButton;
+
+// Global variables for Add Product to Meal functionality
+let currentMealTypeForAdding = '';
+let selectedProductForMeal = null;
+
 
 // Dark Mode Functions
 function applyDarkMode(enable) {
@@ -141,7 +140,6 @@ function applyDarkMode(enable) {
     }
 }
 
-// Function to save daily food entries to local storage
 function saveDailyFoodEntriesToLocalStorage() {
     try {
         localStorage.setItem('userDailyFoodEntries', JSON.stringify(dailyFoodEntries));
@@ -150,32 +148,23 @@ function saveDailyFoodEntriesToLocalStorage() {
     }
 }
 
-// Function to load daily food entries from local storage
 function loadDailyFoodEntriesFromLocalStorage() {
     const storedEntries = localStorage.getItem('userDailyFoodEntries');
     if (storedEntries) {
         try {
             const parsedEntries = JSON.parse(storedEntries);
             if (parsedEntries && typeof parsedEntries === 'object') {
-                // Clear existing mock data from the global object
                 Object.keys(dailyFoodEntries).forEach(key => delete dailyFoodEntries[key]);
-                // Assign loaded entries to the global object
                 Object.assign(dailyFoodEntries, parsedEntries);
-                console.log('Daily food entries loaded from local storage.');
             } else {
-                // Handles null from JSON.parse or non-object data
-                console.warn('Stored daily food entries format is invalid or null. Using predefined mock data and saving it.');
-                saveDailyFoodEntriesToLocalStorage(); // Persist current mock data
+                saveDailyFoodEntriesToLocalStorage(); 
             }
         } catch (error) {
             console.error('Error parsing daily food entries from local storage:', error);
-            // If parsing fails, use predefined mock data and save it
-            saveDailyFoodEntriesToLocalStorage(); // Persist current mock data
+            saveDailyFoodEntriesToLocalStorage();
         }
     } else {
-        // No data in local storage, use predefined mock data and save it
-        console.log('No daily food entries in local storage. Using predefined mock data and saving it.');
-        saveDailyFoodEntriesToLocalStorage(); // Persist current mock data
+        saveDailyFoodEntriesToLocalStorage();
     }
 }
 
@@ -185,28 +174,103 @@ function saveDarkModePreference(enable) {
 
 function loadDarkModePreference() {
     const preference = localStorage.getItem('darkModeEnabled');
-    if (preference === 'true') {
-        applyDarkMode(true);
-    } else {
-        applyDarkMode(false); 
+    applyDarkMode(preference === 'true');
+}
+
+function saveSettingsToLocalStorage() {
+    try {
+        localStorage.setItem(userCalorieGoalKey, calorieGoal.toString());
+        localStorage.setItem(userWaterGoalKey, waterGoal.toString());
+        console.log('Settings saved to local storage.'); 
+    } catch (error) {
+        console.error('Error saving settings to local storage:', error);
     }
 }
 
+function loadSettingsFromLocalStorage() {
+    try {
+        const storedCalorieGoal = localStorage.getItem(userCalorieGoalKey);
+        if (storedCalorieGoal !== null) {
+            const parsedCalorieGoal = parseInt(storedCalorieGoal);
+            if (!isNaN(parsedCalorieGoal) && parsedCalorieGoal > 0) calorieGoal = parsedCalorieGoal;
+        }
+        const storedWaterGoal = localStorage.getItem(userWaterGoalKey);
+        if (storedWaterGoal !== null) {
+            const parsedWaterGoal = parseFloat(storedWaterGoal);
+            if (!isNaN(parsedWaterGoal) && parsedWaterGoal > 0) waterGoal = parsedWaterGoal;
+        }
+    } catch (error) {
+        console.error('Error loading settings from local storage:', error);
+    }
+    if (overviewCalorieGoalDisplay) overviewCalorieGoalDisplay.textContent = `Ziel ${calorieGoal} kcal`;
+    if (newCalorieGoalInput) newCalorieGoalInput.value = calorieGoal;
+    if (newWaterGoalInput) newWaterGoalInput.value = waterGoal;
+}
 
-/**
- * Shows the specified page and hides all others.
- * @param {string} pageId - The ID of the page to display (e.g., 'today-page').
- */
+// New functions for daily water log persistence
+function saveDailyWaterLogToLocalStorage() {
+    try {
+        console.log('[SAVE WATER LOG] Saving dailyWaterLog:', JSON.stringify(dailyWaterLog), 'to key:', userDailyWaterLogKey);
+        localStorage.setItem(userDailyWaterLogKey, JSON.stringify(dailyWaterLog));
+    } catch (error) {
+        console.error('Error saving daily water log to local storage:', error);
+    }
+}
+
+function loadDailyWaterLogFromLocalStorage() {
+    const rawData = localStorage.getItem(userDailyWaterLogKey);
+    console.log('[LOAD WATER LOG] Raw data from localStorage:', rawData);
+    try {
+        if (rawData) {
+            const parsedLog = JSON.parse(rawData);
+            // Ensure dailyWaterLog is an object even if rawData is "null" or invalid JSON that parses to null/non-object
+            dailyWaterLog = (parsedLog && typeof parsedLog === 'object') ? parsedLog : {};
+        } else {
+            dailyWaterLog = {}; // Initialize if nothing in storage
+        }
+    } catch (error) {
+        console.error('[LOAD WATER LOG] Error parsing dailyWaterLog:', error);
+        dailyWaterLog = {}; // Initialize on error
+    }
+    // Save back in case it was null/corrupt to ensure consistent state in localStorage
+    if (!rawData || (rawData && JSON.stringify(dailyWaterLog) !== rawData)) {
+        saveDailyWaterLogToLocalStorage();
+    }
+    console.log('[LOAD WATER LOG] Parsed dailyWaterLog:', JSON.stringify(dailyWaterLog));
+}
+
+
+// Moved closeFoodDetailModal function definition earlier
+function closeFoodDetailModal() { 
+    console.log("[closeFoodDetailModal] Called. Hiding foodDetailModal.");
+    if (foodDetailModal) foodDetailModal.classList.add('hidden'); 
+    currentEditingFoodEntry = null; 
+    currentEditingDateKey = null; 
+}
+
 function showPage(pageId) {
-    pageContents.forEach(page => {
-        page.classList.remove('active');
-    });
-    document.getElementById(pageId).classList.add('active');
+    console.log(`[showPage] Attempting to show page: ${pageId}`); 
+    pageContents.forEach(page => page.classList.remove('active'));
+    const activePage = document.getElementById(pageId);
+    if (activePage) {
+        activePage.classList.add('active');
+        console.log(`[showPage] Page ${pageId} activated.`); 
+    } else {
+        console.error(`[showPage] Page element not found for ID: ${pageId}`); 
+    }
 
     switch (pageId) {
         case 'today-page':
             pageTitle.textContent = 'Heute';
-            overviewCalorieGoalDisplay.textContent = `Ziel ${calorieGoal} kcal`;
+            if (overviewCalorieGoalDisplay) overviewCalorieGoalDisplay.textContent = `Ziel ${calorieGoal} kcal`;
+            
+            const todayKey = new Date().toISOString().split('T')[0];
+            waterConsumed = dailyWaterLog[todayKey] || 0;
+            console.log('[SHOWPAGE TODAY] Setting waterConsumed. Key:', todayKey, 'Value from dailyWaterLog:', dailyWaterLog[todayKey], 'Resulting waterConsumed:', waterConsumed);
+            updateWaterDisplay(); 
+
+            renderTodayPageMealSections();
+            updateTodayPageOverallMetrics();
             break;
         case 'profile-page':
             pageTitle.textContent = 'Profil';
@@ -218,7 +282,20 @@ function showPage(pageId) {
             break;
         case 'overview-page':
             pageTitle.textContent = 'Übersicht';
+            console.log('[showPage] Initializing Overview Page...');
             initializeOverviewPage(); 
+            console.log('[showPage] Calling renderCalendar for Overview Page. currentCalendarDate:', currentCalendarDate);
+            renderCalendar(currentCalendarDate); 
+            const calGrid = document.getElementById('calendarGrid'); 
+            if (calGrid) {
+                console.log('[showPage] After renderCalendar. calendarGrid.innerHTML length:', calGrid.innerHTML.length);
+                console.log('[showPage] calendarGrid.offsetHeight:', calGrid.offsetHeight);
+            } else {
+                console.log('[showPage] After renderCalendar. calendarGrid element not found.');
+            }
+            console.log('[showPage] Calling updateDailySummary for Overview Page. selectedCalendarDate:', selectedCalendarDate);
+            updateDailySummary(selectedCalendarDate); 
+            console.log('[showPage] Overview Page setup complete.');
             break;
         case 'settings-page':
             pageTitle.textContent = 'Einstellungen';
@@ -229,9 +306,6 @@ function showPage(pageId) {
     }
 }
 
-/**
- * Initialisiert die Elemente und Event-Listener für den BMI-Rechner.
- */
 function initializeBmiCalculator() {
     if (!calculateBmiButton) { 
         calculateBmiButton = document.getElementById('calculateBmi');
@@ -251,155 +325,106 @@ function initializeBmiCalculator() {
                 const weightKg = parseFloat(weightInput.value);
                 const ageYears = parseInt(ageInput.value);
                 let gender = '';
-                genderInputs.forEach(radio => {
-                    if (radio.checked) {
-                        gender = radio.value;
-                    }
-                });
+                genderInputs.forEach(radio => { if (radio.checked) gender = radio.value; });
                 const activityLevel = parseFloat(activityLevelSelect.value);
                 const goal = goalSelect.value;
 
                 if (isNaN(heightCm) || isNaN(weightKg) || isNaN(ageYears) || heightCm <= 0 || weightKg <= 0 || ageYears <= 0 || gender === '') {
                     const messageBox = document.createElement('div');
-                    messageBox.style.cssText = `
-                        position: fixed;
-                        top: 50%;
-                        left: 50%;
-                        transform: translate(-50%, -50%);
-                        background-color: white;
-                        padding: 20px;
-                        border-radius: 10px;
-                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                        z-index: 1000;
-                        text-align: center;
-                    `;
-                    messageBox.innerHTML = `
-                        <p>Bitte alle Felder korrekt ausfüllen.</p>
-                        <button onclick="this.parentNode.remove()" style="margin-top: 10px; padding: 8px 15px; background-color: #9FB8DF; color: white; border: none; border-radius: 5px; cursor: pointer;">OK</button>
-                    `;
+                    messageBox.style.cssText = `position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); z-index: 1000; text-align: center;`;
+                    messageBox.innerHTML = `<p>Bitte alle Felder korrekt ausfüllen.</p><button onclick="this.parentNode.remove()" style="margin-top: 10px; padding: 8px 15px; background-color: #9FB8DF; color: white; border: none; border-radius: 5px; cursor: pointer;">OK</button>`;
                     document.body.appendChild(messageBox);
-                    bmiResultDiv.textContent = '';
-                    bmiCategoryDiv.textContent = '';
-                    calorieRecommendationDiv.textContent = '';
+                    if(bmiResultDiv) bmiResultDiv.textContent = '';
+                    if(bmiCategoryDiv) bmiCategoryDiv.textContent = '';
+                    if(calorieRecommendationDiv) calorieRecommendationDiv.textContent = '';
                     return;
                 }
-
                 const heightM = heightCm / 100;
                 const bmi = weightKg / (heightM * heightM);
                 let category = '';
-
                 if (bmi < 18.5) category = 'Untergewicht';
                 else if (bmi < 24.9) category = 'Normalgewicht';
                 else if (bmi < 29.9) category = 'Übergewicht';
                 else category = 'Fettleibigkeit';
-
                 let bmr;
                 if (gender === 'male') bmr = (10 * weightKg) + (6.25 * heightCm) - (5 * ageYears) + 5;
                 else bmr = (10 * weightKg) + (6.25 * heightCm) - (5 * ageYears) - 161;
-
                 let tdee = bmr * activityLevel;
                 let recommendedCalories = tdee;
-
                 if (goal === 'lose') recommendedCalories = tdee - 500;
                 else if (goal === 'gain') recommendedCalories = tdee + 500;
-
                 openBmiResultModal(bmi.toFixed(2), category, recommendedCalories.toFixed(0), goal);
             });
         }
     }
 }
 
-/**
- * Opens a modal to display BMI results and calorie recommendation.
- */
 function openBmiResultModal(bmi, category, recommendedKcal, goal) {
     const existingModal = document.getElementById('bmiResultModal');
     if (existingModal) existingModal.remove();
-
     const modal = document.createElement('div');
     modal.id = 'bmiResultModal';
     modal.classList.add('modal-overlay'); 
-
     let goalText = '';
     if (goal === 'lose') goalText = 'Abnehmen';
     else if (goal === 'maintain') goalText = 'Halten';
     else if (goal === 'gain') goalText = 'Zunehmen';
-
-    modal.innerHTML = `
-        <div class="modal-content">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-semibold">BMI & Kalorienempfehlung</h2>
-                <button id="closeBmiModalButton" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
-            </div>
-            <div class="space-y-3 text-center">
-                <p class="text-lg font-bold" style="font-size: 2rem; padding-top: 2rem;">Dein BMI: ${bmi}</p>
-                <p class="text-base">Kategorie: ${category}</p>
-                <p class="text-base font-semibold text-[#9FB8DF] mb-40">Zum ${goalText} wird ein Ziel von ca. ${recommendedKcal} kcal pro Tag empfohlen.</p>
-            </div>
-            <div class="flex justify-end space-x-4 mt-6">
-                <button id="discardBmiButton" class="add-button px-4 py-2 bg-transparent text-red-500 border border-red-500 hover:bg-red-500 hover:text-white">Verwerfen</button>
-                <button id="applyBmiButton" class="add-button px-4 py-2">Übernehmen</button>
-            </div>
-        </div>
-    `;
+    modal.innerHTML = `<div class="modal-content"><div class="flex justify-between items-center mb-4"><h2 class="text-xl font-semibold">BMI & Kalorienempfehlung</h2><button id="closeBmiModalButton" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button></div><div class="space-y-3 text-center"><p class="text-lg font-bold" style="font-size: 2rem; padding-top: 2rem;">Dein BMI: ${bmi}</p><p class="text-base">Kategorie: ${category}</p><p class="text-base font-semibold text-[#9FB8DF] mb-40">Zum ${goalText} wird ein Ziel von ca. ${recommendedKcal} kcal pro Tag empfohlen.</p></div><div class="flex justify-end space-x-4 mt-6"><button id="discardBmiButton" class="add-button px-4 py-2 bg-transparent text-red-500 border border-red-500 hover:bg-red-500 hover:text-white">Verwerfen</button><button id="applyBmiButton" class="add-button px-4 py-2">Übernehmen</button></div></div>`;
     document.body.appendChild(modal);
-
     document.getElementById('closeBmiModalButton').addEventListener('click', () => modal.remove());
     document.getElementById('discardBmiButton').addEventListener('click', () => modal.remove());
     document.getElementById('applyBmiButton').addEventListener('click', () => {
         calorieGoal = parseInt(recommendedKcal);
-        overviewCalorieGoalDisplay.textContent = `Ziel ${calorieGoal} kcal`; 
-        
+        saveSettingsToLocalStorage(); 
         const successMessageBox = document.createElement('div');
-        successMessageBox.style.cssText = `
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background-color: white; padding: 20px; border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); z-index: 1000; text-align: center;
-        `;
-        successMessageBox.innerHTML = `
-            <p>Neues Kalorienziel (${calorieGoal} kcal) übernommen!</p>
-            <button onclick="this.parentNode.remove()" style="margin-top: 10px; padding: 8px 15px; background-color: #9FB8DF; color: white; border: none; border-radius: 5px; cursor: pointer;">OK</button>
-        `;
+        successMessageBox.style.cssText = `position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); z-index: 1000; text-align: center;`;
+        successMessageBox.innerHTML = `<p>Neues Kalorienziel (${calorieGoal} kcal) übernommen!</p><button onclick="this.parentNode.remove()" style="margin-top: 10px; padding: 8px 15px; background-color: #9FB8DF; color: white; border: none; border-radius: 5px; cursor: pointer;">OK</button>`;
         document.body.appendChild(successMessageBox);
         modal.remove(); 
+        if (overviewCalorieGoalDisplay) overviewCalorieGoalDisplay.textContent = `Ziel ${calorieGoal} kcal`;
+        if (newCalorieGoalInput) newCalorieGoalInput.value = calorieGoal;
     });
 }
 
-/**
- * Initialisiert die Elemente und Event-Listener für die Einstellungen.
- */
 function initializeSettings() {
     if (!newCalorieGoalInput) newCalorieGoalInput = document.getElementById('newCalorieGoalInput');
     if (!newWaterGoalInput) newWaterGoalInput = document.getElementById('newWaterGoalInput');
     if (!saveSettingsButton) saveSettingsButton = document.getElementById('saveSettingsButton');
     if (!darkModeToggle) darkModeToggle = document.getElementById('darkModeToggle');
-
+    
+    if (newCalorieGoalInput) newCalorieGoalInput.value = calorieGoal;
+    if (newWaterGoalInput) newWaterGoalInput.value = waterGoal;
 
     if (saveSettingsButton && !saveSettingsButton.hasAttribute('data-listener-attached')) {
         saveSettingsButton.addEventListener('click', () => {
-            const newCalorieGoal = parseInt(newCalorieGoalInput.value);
-            const newWaterGoal = parseFloat(newWaterGoalInput.value);
-            let settingsChanged = false;
+            const newCalorieGoalValue = parseInt(newCalorieGoalInput.value);
+            const newWaterGoalValue = parseFloat(newWaterGoalInput.value);
+            
+            let calorieGoalUpdated = false;
+            let waterGoalUpdated = false;
 
-            if (!isNaN(newCalorieGoal) && newCalorieGoal > 0) {
-                calorieGoal = newCalorieGoal;
-                overviewCalorieGoalDisplay.textContent = `Ziel ${calorieGoal} kcal`;
-                settingsChanged = true;
+            if (!isNaN(newCalorieGoalValue) && newCalorieGoalValue > 0) {
+                if (calorieGoal !== newCalorieGoalValue) {
+                    calorieGoal = newCalorieGoalValue;
+                    if (overviewCalorieGoalDisplay) overviewCalorieGoalDisplay.textContent = `Ziel ${calorieGoal} kcal`;
+                    calorieGoalUpdated = true;
+                }
             } else if (newCalorieGoalInput.value.trim() !== '') {
-                // Show error only if input was not empty but invalid
                 alert("Bitte geben Sie ein gültiges Kalorienziel ein.");
             }
 
-            if (!isNaN(newWaterGoal) && newWaterGoal > 0) {
-                waterGoal = newWaterGoal;
-                updateWaterDisplay();
-                settingsChanged = true;
+            if (!isNaN(newWaterGoalValue) && newWaterGoalValue > 0) {
+                if (waterGoal !== newWaterGoalValue) {
+                    waterGoal = newWaterGoalValue;
+                    updateWaterDisplay(); 
+                    waterGoalUpdated = true;
+                }
             } else if (newWaterGoalInput.value.trim() !== '') {
-                 // Show error only if input was not empty but invalid
                 alert("Bitte geben Sie ein gültiges Wasserziel ein.");
             }
 
-            if (settingsChanged) {
+            if (calorieGoalUpdated || waterGoalUpdated) {
+                saveSettingsToLocalStorage(); 
                 alert("Einstellungen gespeichert!");
             }
         });
@@ -415,15 +440,8 @@ function initializeSettings() {
         });
         darkModeToggle.setAttribute('data-listener-attached', 'true');
     }
-    
-    if (newCalorieGoalInput) newCalorieGoalInput.value = calorieGoal;
-    if (newWaterGoalInput) newWaterGoalInput.value = waterGoal;
 }
 
-
-/**
- * Creates a span element with a colored circle and text.
- */
 function createValueSpan(value, colorClass, unit = '') {
     const span = document.createElement('span');
     span.classList.add('flex', 'items-center', 'whitespace-nowrap'); 
@@ -431,9 +449,6 @@ function createValueSpan(value, colorClass, unit = '') {
     return span;
 }
 
-/**
- * Initialisiert die Elemente der Mahlzeiten-Seite und lädt Produktdaten.
- */
 async function initializeMealsPage() {
     if (!productNameInput) {
         productNameInput = document.getElementById('productNameInput');
@@ -441,19 +456,17 @@ async function initializeMealsPage() {
         productCarbsInput = document.getElementById('productCarbsInput'); 
         productProteinInput = document.getElementById('productProteinInput'); 
         productFatInput = document.getElementById('productFatInput'); 
-        productPortionInput = document.getElementById('productPortionInput');
+        productPortionInput = document.getElementById('productPortionInput'); 
         saveProductButton = document.getElementById('saveProductButton');
-        productSearchInput = document.getElementById('productSearchInput');
+        productSearchInput = document.getElementById('productSearchInput'); 
         productCountDisplay = document.getElementById('productCountDisplay');
         productTableBody = document.getElementById('productTableBody'); 
-        
         exportCsvButton = document.getElementById('exportCsvButton');
         importCsvButton = document.getElementById('importCsvButton');
         prevPageButton = document.getElementById('prevPageButton'); 
         nextPageButton = document.getElementById('nextPageButton'); 
         paginationInfo = document.getElementById('paginationInfo'); 
         itemsPerPageSelect = document.getElementById('itemsPerPageSelect'); 
-
         productDetailModal = document.getElementById('productDetailModal');
         closeProductModalButton = document.getElementById('closeProductModalButton');
         modalProductNameDisplay = document.getElementById('modalProductNameDisplay');
@@ -461,13 +474,11 @@ async function initializeMealsPage() {
         modalProductCarbsInput = document.getElementById('modalProductCarbsInput');
         modalProductProteinInput = document.getElementById('modalProductProteinInput');
         modalProductFatInput = document.getElementById('modalProductFatInput');
-        modalProductPortionInput = document.getElementById('modalProductPortionInput');
+        modalProductPortionInput_mealsPage = document.getElementById('modalProductPortionInput'); 
         saveProductEntryButton = document.getElementById('saveProductEntryButton');
         deleteProductEntryButton = document.getElementById('deleteProductEntryButton');
-
-        // Load products from local storage or fallback to JSON
-        await loadProductsFromLocalStorage(); 
-        renderProductTable(); // Render the table with loaded products
+        
+        renderProductTable();
 
         if (saveProductButton) saveProductButton.addEventListener('click', saveProduct);
         if (productSearchInput) productSearchInput.addEventListener('input', () => { currentPage = 1; renderProductTable(); });
@@ -476,33 +487,25 @@ async function initializeMealsPage() {
         if (prevPageButton) prevPageButton.addEventListener('click', prevPage);
         if (nextPageButton) nextPageButton.addEventListener('click', nextPage);
         if (itemsPerPageSelect) itemsPerPageSelect.addEventListener('change', changeItemsPerPage);
-
-        closeProductModalButton.addEventListener('click', closeProductDetailModal);
-        saveProductEntryButton.addEventListener('click', saveEditedProduct);
-        deleteProductEntryButton.addEventListener('click', deleteProductFromModal);
+        if (closeProductModalButton) closeProductModalButton.addEventListener('click', closeProductDetailModal);
+        if (saveProductEntryButton) saveProductEntryButton.addEventListener('click', saveEditedProduct);
+        if (deleteProductEntryButton) deleteProductEntryButton.addEventListener('click', deleteProductFromModal);
     } else {
-        renderProductTable();
+        renderProductTable(); 
     }
 }
-
-/**
- * Renders the product table.
- */
 function renderProductTable() {
     if (!productTableBody) return;
     productTableBody.innerHTML = ''; 
     const searchTerm = productSearchInput ? productSearchInput.value.toLowerCase() : '';
     const filteredProducts = products.filter(p => p.Produktname.toLowerCase().includes(searchTerm));
     const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
-
     if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
     else if (totalPages === 0) currentPage = 0;
     if (currentPage === 0 && filteredProducts.length > 0) currentPage = 1;
-
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const productsToDisplay = filteredProducts.slice(startIndex, endIndex);
-
     productsToDisplay.forEach((product, index) => {
         const row = productTableBody.insertRow();
         row.classList.add(index % 2 === 0 ? 'bg-white' : 'bg-gray-50');
@@ -522,7 +525,6 @@ function renderProductTable() {
         if (product['Portionsgröße (g/ml)']) detailsDiv.appendChild(createValueSpan(product['Portionsgröße (g/ml)'], 'bg-purple-300', 'g'));
         cell.appendChild(detailsDiv);
     });
-
     if (productCountDisplay) {
         const displayedCount = productsToDisplay.length;
         const totalFilteredCount = filteredProducts.length;
@@ -530,14 +532,12 @@ function renderProductTable() {
         if (totalFilteredCount === 0) productCountDisplay.textContent = `Keine Produkte gefunden.`;
         else productCountDisplay.textContent = `Produkte ${startIndex + 1}-${Math.min(endIndex, totalFilteredCount)} von ${totalFilteredCount} (insgesamt ${totalProductsCount})`;
     }
-
     if (prevPageButton && nextPageButton && paginationInfo) {
         prevPageButton.disabled = currentPage <= 1;
         nextPageButton.disabled = currentPage >= totalPages;
         paginationInfo.textContent = `Seite ${currentPage} von ${totalPages > 0 ? totalPages : 1}`;
     }
 }
-
 function prevPage() { if (currentPage > 1) { currentPage--; renderProductTable(); } }
 function nextPage() {
     const searchTerm = productSearchInput ? productSearchInput.value.toLowerCase() : '';
@@ -545,7 +545,7 @@ function nextPage() {
     const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
     if (currentPage < totalPages) { currentPage++; renderProductTable(); }
 }
-function changeItemsPerPage() { itemsPerPage = parseInt(itemsPerPageSelect.value); currentPage = 1; renderProductTable(); }
+function changeItemsPerPage() { if(itemsPerPageSelect) itemsPerPage = parseInt(itemsPerPageSelect.value); currentPage = 1; renderProductTable(); }
 
 function saveProduct() {
     const name = productNameInput.value.trim();
@@ -560,7 +560,7 @@ function saveProduct() {
             "Portionsgröße (g/ml)": productPortionInput.value.trim() || "N/A"
         };
         products.push(newProduct); 
-        saveProductsToLocalStorage(); // Save to local storage
+        saveProductsToLocalStorage(); 
         currentPage = 1; 
         renderProductTable();
         [productNameInput, productKcalInput, productCarbsInput, productProteinInput, productFatInput, productPortionInput].forEach(i => i.value = '');
@@ -569,7 +569,6 @@ function saveProduct() {
         alert("Bitte Produktname und gültige Kalorien pro 100g eingeben.");
     }
 }
-
 function exportProductsAsCsv() {
     const headers = ["Produktname", "kcal/100g", "Kohlenhydrate (g)", "Eiweiß (g)", "Fett (g)", "Portionsgröße (g/ml)"];
     const csvRows = [headers.map(h => `"${h}"`).join(';')];
@@ -581,31 +580,51 @@ function exportProductsAsCsv() {
     link.click();
     alert("Produkte als CSV exportiert!");
 }
-
 function importProductsFromCsv() { alert("CSV Import (Funktion noch nicht implementiert)"); }
 
-function updateWaterDisplay() { waterAmountDisplay.textContent = `${waterConsumed.toFixed(1)} L`; renderWaterGlasses(); }
+function updateWaterDisplay() { 
+    console.log('[UPDATE WATER DISPLAY] Updating with waterConsumed:', waterConsumed, '| waterGoal:', waterGoal); // Diagnostic
+    if (waterAmountDisplay) waterAmountDisplay.textContent = `${waterConsumed.toFixed(1)} L`; 
+    renderWaterGlasses(); 
+}
 function renderWaterGlasses() {
+    if (!waterGlassesContainer) return;
     waterGlassesContainer.innerHTML = '';
     const numGlasses = Math.ceil(waterGoal / glassSize);
     const filledGlasses = Math.floor(waterConsumed / glassSize);
+    const todayKey = new Date().toISOString().split('T')[0];
+
     for (let i = 0; i < numGlasses; i++) {
         const glassDiv = document.createElement('div');
         glassDiv.classList.add('water-glass', ...(i < filledGlasses ? ['filled'] : []));
         glassDiv.innerHTML = '<i class="fa-solid fa-glass-water"></i>';
-        glassDiv.addEventListener('click', () => { waterConsumed = Math.min(waterGoal, waterConsumed + glassSize); updateWaterDisplay(); });
+        glassDiv.addEventListener('click', () => { 
+            if (i < Math.floor(waterConsumed / glassSize)) { 
+                waterConsumed = i * glassSize;
+            } else { 
+                waterConsumed = (i + 1) * glassSize;
+            }
+            waterConsumed = Math.min(waterGoal, waterConsumed); 
+            waterConsumed = Math.max(0, waterConsumed); 
+
+            dailyWaterLog[todayKey] = waterConsumed;
+            console.log('[WATER GLASS CLICK] Updating dailyWaterLog. Key:', todayKey, 'Value for key:', waterConsumed, 'Full dailyWaterLog obj:', JSON.stringify(dailyWaterLog)); // Diagnostic
+            saveDailyWaterLogToLocalStorage();
+            updateWaterDisplay(); 
+        });
         waterGlassesContainer.appendChild(glassDiv);
     }
 }
 
-navItems.forEach(item => item.addEventListener('click', () => { if (item.dataset.page) showPage(item.dataset.page); }));
-
 function initializeOverviewPage() {
-    if (!prevMonthButton) {
+    console.log('[initializeOverviewPage] Called.'); 
+    if (!prevMonthButton) { 
         prevMonthButton = document.getElementById('prevMonthButton');
         nextMonthButton = document.getElementById('nextMonthButton');
         currentMonthDisplay = document.getElementById('currentMonthDisplay');
         calendarGrid = document.getElementById('calendarGrid');
+        console.log('[initializeOverviewPage] calendarGrid selected:', calendarGrid !== null); 
+        console.log('[initializeOverviewPage] currentMonthDisplay selected:', currentMonthDisplay !== null); 
         dailySummaryDate = document.getElementById('dailySummaryDate');
         dailyConsumedCaloriesDisplay = document.getElementById('dailyConsumedCalories');
         dailyRemainingCaloriesDisplay = document.getElementById('dailyRemainingCalories');
@@ -614,34 +633,58 @@ function initializeOverviewPage() {
         dailyFatArc = document.getElementById('dailyFatArc');
         consumedFoodList = document.getElementById('consumedFoodList');
         foodDetailModal = document.getElementById('foodDetailModal');
-        closeModalButton = document.getElementById('closeModalButton');
+        closeModalButton = document.getElementById('closeModalButton'); 
         modalFoodNameDisplay = document.getElementById('modalFoodNameDisplay');
         modalKcalInput = document.getElementById('modalKcalInput');
         modalCarbsInput = document.getElementById('modalCarbsInput');
         modalProteinInput = document.getElementById('modalProteinInput');
         modalFatInput = document.getElementById('modalFatInput');
-        modalPortionInput = document.getElementById('modalPortionInput');
+        modalPortionInput = document.getElementById('modalPortionInput'); 
         saveFoodEntryButton = document.getElementById('saveFoodEntryButton');
         deleteFoodEntryButton = document.getElementById('deleteFoodEntryButton');
 
-        prevMonthButton.addEventListener('click', () => { currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1); renderCalendar(currentCalendarDate); });
-        nextMonthButton.addEventListener('click', () => { currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1); renderCalendar(currentCalendarDate); });
-        closeModalButton.addEventListener('click', closeFoodDetailModal);
-        saveFoodEntryButton.addEventListener('click', () => saveEditedFoodEntry(currentEditingFoodEntry, currentEditingDateKey));
-        deleteFoodEntryButton.addEventListener('click', () => deleteFoodEntry(currentEditingFoodEntry, currentEditingDateKey));
+        if(prevMonthButton) prevMonthButton.addEventListener('click', () => { currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1); renderCalendar(currentCalendarDate); updateDailySummary(selectedCalendarDate); });
+        if(nextMonthButton) nextMonthButton.addEventListener('click', () => { currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1); renderCalendar(currentCalendarDate); updateDailySummary(selectedCalendarDate); });
+        if(closeModalButton) closeModalButton.addEventListener('click', closeFoodDetailModal); 
+        if(saveFoodEntryButton) saveFoodEntryButton.addEventListener('click', () => saveEditedFoodEntry(currentEditingFoodEntry, currentEditingDateKey));
+        if(deleteFoodEntryButton) deleteFoodEntryButton.addEventListener('click', () => deleteFoodEntry(currentEditingFoodEntry, currentEditingDateKey));
     }
-    renderCalendar(currentCalendarDate);
-    updateDailySummary(selectedCalendarDate);
 }
 
 function renderCalendar(date) {
+    console.log('[renderCalendar] Starting. Date:', date); 
+    if (!calendarGrid) {
+        console.error('[renderCalendar] calendarGrid element is null or undefined! Attempting to select it again.'); 
+        calendarGrid = document.getElementById('calendarGrid');
+        if(!calendarGrid) {
+            console.error('[renderCalendar] calendarGrid still not found after re-selection. Aborting.');
+            return;
+        }
+    }
+    if (!currentMonthDisplay) {
+        console.warn('[renderCalendar] currentMonthDisplay element is null or undefined. Attempting to select it again.');
+        currentMonthDisplay = document.getElementById('currentMonthDisplay');
+         if(!currentMonthDisplay) {
+            console.warn('[renderCalendar] currentMonthDisplay still not found after re-selection.');
+        }
+    }
+    
+    console.log('[renderCalendar] calendarGrid offsetHeight:', calendarGrid.offsetHeight); 
+    console.log('[renderCalendar] calendarGrid clientHeight:', calendarGrid.clientHeight); 
+    console.log('[renderCalendar] calendarGrid visibility:', window.getComputedStyle(calendarGrid).visibility); 
+    console.log('[renderCalendar] calendarGrid display:', window.getComputedStyle(calendarGrid).display); 
+
+    console.log('[renderCalendar] Clearing calendarGrid. Current innerHTML length:', calendarGrid.innerHTML.length); 
     calendarGrid.innerHTML = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'].map(d => `<div class="font-semibold text-gray-500">${d}</div>`).join('');
+    console.log('[renderCalendar] calendarGrid cleared or headers set.'); 
+
     const year = date.getFullYear(), month = date.getMonth();
-    currentMonthDisplay.textContent = new Intl.DateTimeFormat('de-DE', { month: 'long', year: 'numeric' }).format(date);
+    if(currentMonthDisplay) currentMonthDisplay.textContent = new Intl.DateTimeFormat('de-DE', { month: 'long', year: 'numeric' }).format(date);
     const firstDay = new Date(year, month, 1), startDay = (firstDay.getDay() + 6) % 7;
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     for (let i = 0; i < startDay; i++) calendarGrid.appendChild(document.createElement('div'));
     for (let day = 1; day <= daysInMonth; day++) {
+        console.log(`[renderCalendar] Creating div for day: ${day}`); 
         const dayDiv = document.createElement('div');
         dayDiv.textContent = day;
         dayDiv.classList.add('cursor-pointer');
@@ -651,13 +694,14 @@ function renderCalendar(date) {
         else dayDiv.classList.add('non-selected-day');
         dayDiv.addEventListener('click', () => {
             selectedCalendarDate = currentDayDate;
-            renderCalendar(currentCalendarDate);
+            renderCalendar(currentCalendarDate); 
             updateDailySummary(selectedCalendarDate);
         });
         calendarGrid.appendChild(dayDiv);
     }
+    console.log('[renderCalendar] Finished appending day divs. calendarGrid.innerHTML length:', calendarGrid.innerHTML.length); 
+    console.log('[renderCalendar] calendarGrid offsetHeight after rendering:', calendarGrid.offsetHeight); 
 }
-
 function updateDailySummary(date) {
     const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
     const entries = dailyFoodEntries[dateKey] || [];
@@ -668,8 +712,8 @@ function updateDailySummary(date) {
         totalProteinKcal += (e.protein || 0) * 4;
         totalFatKcal += (e.fat || 0) * 9;
     });
-    dailySummaryDate.textContent = new Intl.DateTimeFormat('de-DE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(date);
-    consumedFoodList.innerHTML = '';
+    if (dailySummaryDate) dailySummaryDate.textContent = new Intl.DateTimeFormat('de-DE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(date);
+    if (consumedFoodList) consumedFoodList.innerHTML = '';
     const mealTypes = ['Frühstück', 'Mittagessen', 'Abendessen', 'Snacks'];
     mealTypes.forEach(type => {
         const mealEntries = entries.filter(e => e.mealType === type);
@@ -698,80 +742,31 @@ function updateDailySummary(date) {
                 ul.appendChild(li);
             });
             sectionDiv.appendChild(ul);
-            consumedFoodList.appendChild(sectionDiv);
+            if (consumedFoodList) consumedFoodList.appendChild(sectionDiv);
         }
     });
-    if (entries.length === 0) consumedFoodList.innerHTML = '<p>Keine Einträge für diesen Tag.</p>';
-    dailyConsumedCaloriesDisplay.textContent = `${totalKcal} kcal`;
-    dailyRemainingCaloriesDisplay.textContent = `Ziel ${calorieGoal - totalKcal} kcal`;
+    if (entries.length === 0 && consumedFoodList) consumedFoodList.innerHTML = '<p>Keine Einträge für diesen Tag.</p>';
+    if (dailyConsumedCaloriesDisplay) dailyConsumedCaloriesDisplay.textContent = `${totalKcal} kcal`;
+    if (dailyRemainingCaloriesDisplay) dailyRemainingCaloriesDisplay.textContent = `Ziel ${calorieGoal - totalKcal} kcal`;
     const circ = 2 * Math.PI * 80;
     const cap = (val, max) => Math.min(val, max);
     const carbsP = cap(totalCarbsKcal, calorieGoal) / calorieGoal, proteinP = cap(totalProteinKcal, calorieGoal) / calorieGoal, fatP = cap(totalFatKcal, calorieGoal) / calorieGoal;
-    dailyCarbsArc.setAttribute('stroke-dasharray', `${carbsP * circ} ${circ * (1 - carbsP)}`); dailyCarbsArc.setAttribute('stroke-dashoffset', '0');
-    dailyProteinArc.setAttribute('stroke-dasharray', `${proteinP * circ} ${circ * (1 - proteinP)}`); dailyProteinArc.setAttribute('stroke-dashoffset', `-${carbsP * circ}`);
-    dailyFatArc.setAttribute('stroke-dasharray', `${fatP * circ} ${circ * (1 - fatP)}`); dailyFatArc.setAttribute('stroke-dashoffset', `-${(carbsP + proteinP) * circ}`);
-    if (totalKcal === 0) [dailyCarbsArc, dailyProteinArc, dailyFatArc].forEach(arc => arc.setAttribute('stroke-dasharray', `0 ${circ}`));
+    if (dailyCarbsArc) { dailyCarbsArc.setAttribute('stroke-dasharray', `${carbsP * circ} ${circ * (1 - carbsP)}`); dailyCarbsArc.setAttribute('stroke-dashoffset', '0'); }
+    if (dailyProteinArc) { dailyProteinArc.setAttribute('stroke-dasharray', `${proteinP * circ} ${circ * (1 - proteinP)}`); dailyProteinArc.setAttribute('stroke-dashoffset', `-${carbsP * circ}`); }
+    if (dailyFatArc) { dailyFatArc.setAttribute('stroke-dasharray', `${fatP * circ} ${circ * (1 - fatP)}`); dailyFatArc.setAttribute('stroke-dashoffset', `-${(carbsP + proteinP) * circ}`); }
+    if (totalKcal === 0 && dailyCarbsArc && dailyProteinArc && dailyFatArc) [dailyCarbsArc, dailyProteinArc, dailyFatArc].forEach(arc => arc.setAttribute('stroke-dasharray', `0 ${circ}`));
 }
-
-function openFoodDetailModal(foodEntry, dateKey) {
-    currentEditingFoodEntry = foodEntry; currentEditingDateKey = dateKey;
-    modalFoodNameDisplay.textContent = foodEntry.name;
-    ['kcal', 'carbs', 'protein', 'fat', 'portion'].forEach(k => {
-        const inputEl = document.getElementById(`modal${k.charAt(0).toUpperCase() + k.slice(1)}Input`);
-        if (inputEl) inputEl.value = foodEntry[k] || (k === 'kcal' ? 0 : '');
-    });
-    foodDetailModal.classList.remove('hidden');
-}
-
-function closeFoodDetailModal() { foodDetailModal.classList.add('hidden'); currentEditingFoodEntry = null; currentEditingDateKey = null; }
-
-function saveEditedFoodEntry(originalFoodEntry, dateKey) {
-    const updatedKcal = parseFloat(modalKcalInput.value);
-    if (isNaN(updatedKcal) || updatedKcal < 0) { alert("Bitte gültige Kalorien eingeben."); return; }
-    const index = dailyFoodEntries[dateKey].findIndex(e => e.id === originalFoodEntry.id);
-    if (index !== -1) {
-        dailyFoodEntries[dateKey][index] = {
-            ...dailyFoodEntries[dateKey][index],
-            kcal: updatedKcal,
-            carbs: parseFloat(modalCarbsInput.value) || 0,
-            protein: parseFloat(modalProteinInput.value) || 0,
-            fat: parseFloat(modalFatInput.value) || 0,
-            portion: parseFloat(modalPortionInput.value) || 0
-        };
-        saveDailyFoodEntriesToLocalStorage(); // Save to local storage
-        renderCalendar(currentCalendarDate); 
-        updateDailySummary(selectedCalendarDate); 
-        closeFoodDetailModal();
-        alert("Eintrag erfolgreich gespeichert!");
-    } else alert("Fehler: Eintrag nicht gefunden.");
-}
-
-function deleteFoodEntry(foodEntryToDelete, dateKey) {
-    if (confirm(`Möchtest du "${foodEntryToDelete.name}" wirklich löschen?`)) {
-        if (dailyFoodEntries[dateKey]) {
-            dailyFoodEntries[dateKey] = dailyFoodEntries[dateKey].filter(e => e.id !== foodEntryToDelete.id);
-            saveDailyFoodEntriesToLocalStorage(); // Save to local storage
-        }
-        renderCalendar(currentCalendarDate); 
-        updateDailySummary(selectedCalendarDate); 
-        closeFoodDetailModal();
-        alert(`"${foodEntryToDelete.name}" wurde gelöscht.`);
-    }
-}
-
 function openProductDetailModal(product) {
     currentEditingProduct = product;
-    modalProductNameDisplay.textContent = product.Produktname;
-    modalProductKcalInput.value = product['kcal/100g'];
-    modalProductCarbsInput.value = product['Kohlenhydrate (g)'] || '';
-    modalProductProteinInput.value = product['Eiweiß (g)'] || '';
-    modalProductFatInput.value = product['Fett (g)'] || '';
-    modalProductPortionInput.value = product['Portionsgröße (g/ml)'] || '';
-    productDetailModal.classList.remove('hidden');
+    if(modalProductNameDisplay) modalProductNameDisplay.textContent = product.Produktname;
+    if(modalProductKcalInput) modalProductKcalInput.value = product['kcal/100g'];
+    if(modalProductCarbsInput) modalProductCarbsInput.value = product['Kohlenhydrate (g)'] || '';
+    if(modalProductProteinInput) modalProductProteinInput.value = product['Eiweiß (g)'] || '';
+    if(modalProductFatInput) modalProductFatInput.value = product['Fett (g)'] || '';
+    if(modalProductPortionInput_mealsPage) modalProductPortionInput_mealsPage.value = product['Portionsgröße (g/ml)'] || '';
+    if (productDetailModal) productDetailModal.classList.remove('hidden');
 }
-
-function closeProductDetailModal() { productDetailModal.classList.add('hidden'); currentEditingProduct = null; }
-
+function closeProductDetailModal() { if (productDetailModal) productDetailModal.classList.add('hidden'); currentEditingProduct = null; }
 function saveEditedProduct() {
     if (!currentEditingProduct) return;
     const updatedKcal = parseFloat(modalProductKcalInput.value);
@@ -782,19 +777,18 @@ function saveEditedProduct() {
         products[index]['Kohlenhydrate (g)'] = parseFloat(modalProductCarbsInput.value) || 0;
         products[index]['Eiweiß (g)'] = parseFloat(modalProductProteinInput.value) || 0;
         products[index]['Fett (g)'] = parseFloat(modalProductFatInput.value) || 0;
-        products[index]['Portionsgröße (g/ml)'] = modalProductPortionInput.value.trim();
-        saveProductsToLocalStorage(); // Save to local storage
+        products[index]['Portionsgröße (g/ml)'] = modalProductPortionInput_mealsPage.value.trim();
+        saveProductsToLocalStorage(); 
         renderProductTable(); 
         closeProductDetailModal();
         alert(`"${currentEditingProduct.Produktname}" erfolgreich gespeichert!`);
     } else alert("Fehler: Produkt nicht gefunden.");
 }
-
 function deleteProductFromModal() {
     if (!currentEditingProduct) return;
     if (confirm(`Möchtest du "${currentEditingProduct.Produktname}" wirklich löschen?`)) {
         products = products.filter(p => p.id !== currentEditingProduct.id);
-        saveProductsToLocalStorage(); // Save to local storage
+        saveProductsToLocalStorage(); 
         currentPage = 1; 
         renderProductTable(); 
         closeProductDetailModal();
@@ -802,14 +796,239 @@ function deleteProductFromModal() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    updateWaterDisplay();
-    loadDarkModePreference(); // Load dark mode preference first
-    loadDailyFoodEntriesFromLocalStorage(); // Load daily food entries
-    showPage('today-page'); // Then show the default page
+// --- Add Product to Meal Functions ---
+function openProductSelectionModal(mealType) {
+    currentMealTypeForAdding = mealType;
+    selectedProductForMeal = null;
+    if (modalProductSearchInput) modalProductSearchInput.value = '';
+    if (modalProductPortionInput_addToMeal) modalProductPortionInput_addToMeal.value = '';
+    renderModalProductList();
+    if (addProductToMealModal) addProductToMealModal.classList.remove('hidden');
+}
+
+function closeProductSelectionModal() {
+    if (addProductToMealModal) addProductToMealModal.classList.add('hidden');
+}
+
+function renderModalProductList() {
+    if (!modalProductList || !modalProductSearchInput) return;
+    console.log('renderModalProductList called. Search term:', modalProductSearchInput.value); 
+    const searchTerm = modalProductSearchInput.value.toLowerCase();
+    console.log('Total products available for search:', products.length); 
+    const filtered = products.filter(p => p.Produktname.toLowerCase().includes(searchTerm));
+    console.log('Number of products after filtering:', filtered.length); 
+    
+    modalProductList.innerHTML = ''; 
+
+    filtered.forEach(product => {
+        const productDiv = document.createElement('div');
+        productDiv.classList.add('p-2', 'hover:bg-gray-200', 'cursor-pointer', 'rounded');
+        productDiv.textContent = `${product.Produktname} (${product['kcal/100g'] || 0} kcal/100g)`;
+        productDiv.addEventListener('click', () => {
+            selectedProductForMeal = product;
+            Array.from(modalProductList.children).forEach(child => child.classList.remove('bg-blue-200', 'selected'));
+            productDiv.classList.add('bg-blue-200', 'selected');
+            if (modalProductPortionInput_addToMeal && product['Portionsgröße (g/ml)']) {
+                 modalProductPortionInput_addToMeal.value = product['Portionsgröße (g/ml)'];
+            }
+        });
+        modalProductList.appendChild(productDiv);
+    });
+}
+
+function addFoodToMeal(mealType, productData, portionGrams) {
+    if (!productData || isNaN(portionGrams) || portionGrams <= 0) {
+        alert("Bitte wählen Sie ein Produkt aus und geben Sie eine gültige Portionsgröße ein.");
+        return;
+    }
+    const kcalPer100g = parseFloat(productData['kcal/100g']) || 0;
+    const carbsPer100g = parseFloat(productData['Kohlenhydrate (g)']) || 0;
+    const proteinPer100g = parseFloat(productData['Eiweiß (g)']) || 0;
+    const fatPer100g = parseFloat(productData['Fett (g)']) || 0;
+    const actualKcal = (kcalPer100g / 100) * portionGrams;
+    const actualCarbs = (carbsPer100g / 100) * portionGrams;
+    const actualProtein = (proteinPer100g / 100) * portionGrams;
+    const actualFat = (fatPer100g / 100) * portionGrams;
+    const newFoodEntry = {
+        id: 'food-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9),
+        name: productData.Produktname,
+        kcal: Math.round(actualKcal),
+        carbs: Math.round(actualCarbs),
+        protein: Math.round(actualProtein),
+        fat: Math.round(actualFat),
+        portion: portionGrams,
+        mealType: mealType
+    };
+    const todayDateKey = new Date().toISOString().split('T')[0];
+    if (!dailyFoodEntries[todayDateKey]) dailyFoodEntries[todayDateKey] = [];
+    dailyFoodEntries[todayDateKey].push(newFoodEntry);
+    saveDailyFoodEntriesToLocalStorage();
+    renderTodayPageMealSections(); 
+    updateTodayPageOverallMetrics(); 
+    closeProductSelectionModal();
+    alert(`${productData.Produktname} wurde zu ${mealType} hinzugefügt!`);
+}
+
+function renderTodayPageMealSections() {
+    const todayDateKey = new Date().toISOString().split('T')[0];
+    const todaysEntries = dailyFoodEntries[todayDateKey] || [];
+    const mealSections = {
+        'Frühstück': 'todayBreakfastFoodList',
+        'Mittagessen': 'todayLunchFoodList',
+        'Abendessen': 'todayDinnerFoodList',
+        'Snacks': 'todaySnacksFoodList'
+    };
+
+    for (const [mealType, elementId] of Object.entries(mealSections)) {
+        const container = document.getElementById(elementId);
+        if (!container) continue;
+        container.innerHTML = ''; 
+        const mealEntries = todaysEntries.filter(e => e.mealType === mealType);
+
+        if (mealEntries.length === 0) {
+            container.innerHTML = '<p class="text-sm text-gray-500">Noch nichts hinzugefügt.</p>';
+            continue;
+        }
+
+        mealEntries.forEach(entry => {
+            const entryDiv = document.createElement('div');
+            entryDiv.classList.add('flex', 'justify-between', 'items-center', 'text-sm', 'py-1');
+            
+            const entrySpan = document.createElement('span');
+            entrySpan.textContent = `${entry.name} - ${entry.kcal} kcal (${entry.portion}g)`;
+            entryDiv.appendChild(entrySpan);
+
+            entryDiv.style.cursor = 'pointer';
+            entryDiv.addEventListener('click', () => openFoodDetailModal(entry, todayDateKey));
+            container.appendChild(entryDiv);
+        });
+    }
+}
+
+function updateTodayPageOverallMetrics() {
+    const todayDateKey = new Date().toISOString().split('T')[0];
+    const todaysEntries = dailyFoodEntries[todayDateKey] || [];
+    let totalKcal = 0, totalCarbs = 0, totalProtein = 0, totalFat = 0;
+
+    todaysEntries.forEach(entry => {
+        totalKcal += entry.kcal || 0;
+        totalCarbs += entry.carbs || 0;
+        totalProtein += entry.protein || 0;
+        totalFat += entry.fat || 0;
+    });
+
+    if (consumedCaloriesDisplay) consumedCaloriesDisplay.textContent = `${totalKcal.toFixed(0)} kcal`;
+    
+    const legendCarbsEl = document.getElementById('legendCarbs');
+    const legendProteinEl = document.getElementById('legendProtein');
+    const legendFatEl = document.getElementById('legendFat');
+    if (legendCarbsEl) legendCarbsEl.textContent = `${totalCarbs.toFixed(1)} g`;
+    if (legendProteinEl) legendProteinEl.textContent = `${totalProtein.toFixed(1)} g`;
+    if (legendFatEl) legendFatEl.textContent = `${totalFat.toFixed(1)} g`;
+    
+    const todayCarbsArcElem = document.getElementById('todayCarbsArc');
+    const todayProteinArcElem = document.getElementById('todayProteinArc');
+    const todayFatArcElem = document.getElementById('todayFatArc');
+    const circ = 2 * Math.PI * 80; 
+
+    const carbsKcal = totalCarbs * 4;
+    const proteinKcal = totalProtein * 4;
+    const fatKcal = totalFat * 9;
+
+    const carbsP = calorieGoal > 0 ? Math.min(carbsKcal / calorieGoal, 1) : 0;
+    const proteinP = calorieGoal > 0 ? Math.min(proteinKcal / calorieGoal, 1) : 0;
+    const fatP = calorieGoal > 0 ? Math.min(fatKcal / calorieGoal, 1) : 0;
+    
+    if (todayFatArcElem) {
+        todayFatArcElem.setAttribute('stroke-dasharray', `${fatP * circ} ${circ * (1 - fatP)}`);
+        todayFatArcElem.setAttribute('stroke-dashoffset', `0`);
+    }
+    if (todayProteinArcElem) {
+        todayProteinArcElem.setAttribute('stroke-dasharray', `${proteinP * circ} ${circ * (1 - proteinP)}`);
+        todayProteinArcElem.setAttribute('stroke-dashoffset', `-${fatP * circ}`);
+    }
+    if (todayCarbsArcElem) {
+        todayCarbsArcElem.setAttribute('stroke-dasharray', `${carbsP * circ} ${circ * (1 - carbsP)}`);
+        todayCarbsArcElem.setAttribute('stroke-dashoffset', `-${(fatP + proteinP) * circ}`);
+    }
+    
+    if (totalKcal === 0 && todayCarbsArcElem && todayProteinArcElem && todayFatArcElem) {
+        [todayCarbsArcElem, todayProteinArcElem, todayFatArcElem].forEach(arc => arc.setAttribute('stroke-dasharray', `0 ${circ}`));
+    }
+}
+
+
+function initializeAddFoodToMealModalListeners() {
+    if (closeAddProductToMealModalButton) closeAddProductToMealModalButton.addEventListener('click', closeProductSelectionModal);
+    if (cancelAddProductToMealButton) cancelAddProductToMealButton.addEventListener('click', closeProductSelectionModal);
+    if (modalProductSearchInput) {
+        console.log('Search input listener attached.'); 
+        modalProductSearchInput.addEventListener('input', () => {
+            console.log('Search term:', modalProductSearchInput.value); 
+            renderModalProductList();
+        });
+    }
+    if (confirmAddProductToMealButton) {
+        confirmAddProductToMealButton.addEventListener('click', () => {
+            const portion = parseFloat(modalProductPortionInput_addToMeal.value);
+            if (selectedProductForMeal && !isNaN(portion) && portion > 0) {
+                addFoodToMeal(currentMealTypeForAdding, selectedProductForMeal, portion);
+            } else {
+                alert("Bitte Produkt auswählen und gültige Portion eingeben.");
+            }
+        });
+    }
+    const addMealButtons = document.querySelectorAll('.add-meal-button');
+    addMealButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            openProductSelectionModal(this.dataset.mealtype);
+        });
+    });
+}
+
+document.addEventListener('DOMContentLoaded', async () => { 
+    addProductToMealModal = document.getElementById('addProductToMealModal');
+    closeAddProductToMealModalButton = document.getElementById('closeAddProductToMealModalButton');
+    modalProductSearchInput = document.getElementById('modalProductSearchInput');
+    modalProductList = document.getElementById('modalProductList');
+    modalProductPortionInput_addToMeal = document.getElementById('modalProductPortionInput'); 
+    cancelAddProductToMealButton = document.getElementById('cancelAddProductToMealButton');
+    confirmAddProductToMealButton = document.getElementById('confirmAddProductToMealButton');
+    
+    const navItems = document.querySelectorAll('.nav-item');
+    console.log('Number of navItems found:', navItems.length); 
+    navItems.forEach(item => {
+        console.log('Attaching listener to navItem for page:', item.dataset.page); 
+        item.addEventListener('click', () => {
+            if (item.dataset.page) {
+                console.log('Navigating to page:', item.dataset.page); 
+                showPage(item.dataset.page);
+            } else {
+                console.log('Clicked navItem has no data-page attribute:', item); 
+            }
+        });
+    });
+    
+    await asyncLoadProductsFromLocalStorage(); 
+
+    loadSettingsFromLocalStorage(); 
+    loadDarkModePreference(); 
+    loadDailyFoodEntriesFromLocalStorage(); 
+    loadDailyWaterLogFromLocalStorage(); // Load daily water log
+    
+    const todayKeyForStartup = new Date().toISOString().split('T')[0];
+    waterConsumed = dailyWaterLog[todayKeyForStartup] || 0;
+    console.log('[DOMContentLoaded] Initializing waterConsumed. Key:', todayKeyForStartup, 'Value from dailyWaterLog:', dailyWaterLog[todayKeyForStartup], 'Resulting waterConsumed:', waterConsumed);
+    
+    updateWaterDisplay(); // Initial call to set up water display based on loaded/default goals & today's water log
+    initializeAddFoodToMealModalListeners(); 
+    
+    renderTodayPageMealSections();
+    updateTodayPageOverallMetrics();
+
+    showPage('today-page'); 
 });
 
-// Function to save products to local storage
 function saveProductsToLocalStorage() {
     try {
         localStorage.setItem('userProducts', JSON.stringify(products));
@@ -818,31 +1037,27 @@ function saveProductsToLocalStorage() {
     }
 }
 
-// Function to load products from local storage or fallback to JSON file
-async function loadProductsFromLocalStorage() {
+async function asyncLoadProductsFromLocalStorage() {
     try {
         const storedProducts = localStorage.getItem('userProducts');
         if (storedProducts) {
             products = JSON.parse(storedProducts);
-            if (!Array.isArray(products)) { // Basic validation
+            if (!Array.isArray(products)) { 
                 console.warn('Stored products format is invalid, falling back to JSON.');
                 throw new Error('Invalid data format in localStorage');
             }
             console.log('Products loaded from local storage.');
-            return; // Successfully loaded from local storage
+            return; 
         }
-        // No products in local storage, fetch from JSON
         console.log('No products in local storage, fetching from base_products.json');
         await fetchAndSaveBaseProducts();
     } catch (error) {
         console.error('Error loading products from local storage:', error);
-        // Fallback to fetching from JSON if local storage loading fails
         console.log('Falling back to fetching from base_products.json due to error.');
-        await fetchAndSaveBaseProducts();
+        await fetchAndSaveBaseProducts(); 
     }
 }
 
-// Helper function to fetch base products and save them
 async function fetchAndSaveBaseProducts() {
     try {
         const response = await fetch('base_products.json');
@@ -855,11 +1070,32 @@ async function fetchAndSaveBaseProducts() {
             id: product.Produktname.toLowerCase().replace(/\s/g, '-') + '-' + Math.random().toString(36).substr(2, 9)
         }));
         console.log('Products loaded from base_products.json');
-        saveProductsToLocalStorage(); // Save the fetched products to local storage
+        saveProductsToLocalStorage(); 
     } catch (error) {
         console.error('Error fetching or processing base_products.json:', error);
-        // If base_products.json also fails, initialize with an empty array or handle as appropriate
         products = []; 
         alert(`Fehler beim Laden der Basisprodukte: ${error.message}.\nDie Produktliste ist möglicherweise leer.`);
     }
 }
+
+[end of script.js]
+
+[end of script.js]
+
+[end of script.js]
+
+[end of script.js]
+
+[end of script.js]
+
+[end of script.js]
+
+[end of script.js]
+
+[end of script.js]
+
+[end of script.js]
+
+[end of script.js]
+
+[end of script.js]
