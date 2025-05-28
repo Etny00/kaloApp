@@ -1134,7 +1134,7 @@ body.dark-mode .text-on-accent {
 
 .toggle-checkbox:checked {
     left: 1.0rem; /* Moves the toggle to the right */
-    border-color: var(--legend-blue, #9FB8DF); 
+    border-color: rgba(0, 0, 0, 0.5);; 
     background-color: var(--legend-blue, #9FB8DF);
 }
 
