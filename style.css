@@ -1134,7 +1134,7 @@ body.dark-mode .text-on-accent {
 
 .toggle-checkbox:checked {
     left: 1.0rem; /* Moves the toggle to the right */
-    border-color: rgba(0, 0, 0, 0.5);; 
+    border-color: var(--legend-blue, #9FB8DF); 
     background-color: var(--legend-blue, #9FB8DF);
 }
 
@@ -1152,7 +1152,7 @@ body.dark-mode .toggle-checkbox {
 }
 body.dark-mode .toggle-checkbox:checked {
     /* left: 1.0rem; is inherited from .toggle-checkbox:checked */
-    border-color: var(--legend-blue-dark, #A5B4FC);
+    border-color: rgba(0, 0, 0, 0.5); 
     background-color: var(--legend-blue-dark, #A5B4FC);
 }
 body.dark-mode .toggle-checkbox:checked + .toggle-label {
