@@ -1119,4 +1119,43 @@ body.dark-mode .text-on-accent {
 /* If there are any explicit `stroke` attributes in SVGs other than progress circle that need theming: */
 /* Example: body.dark-mode .some-svg-icon { stroke: var(--icon-neutral-color-dark); } */
 
+/* Toggle Switch Styles */
+.toggle-label {
+    background-color: #E5E7EB; /* gray-200 */
+    /* transition: background-color 0.2s ease-in-out; */ /* Tailwind class handles transition */
+}
+
+.toggle-checkbox {
+    background-color: white;
+    border-color: #E5E7EB; /* gray-200 */
+    transition: all 0.2s ease-in-out;
+    left: 0; /* Default position for LTR */
+}
+
+.toggle-checkbox:checked {
+    left: 1.0rem; /* Moves the toggle to the right */
+    border-color: var(--legend-blue, #9FB8DF); 
+    background-color: var(--legend-blue, #9FB8DF);
+}
+
+.toggle-checkbox:checked + .toggle-label {
+    background-color: var(--legend-blue, #9FB8DF);
+}
+
+/* Dark Mode Toggle Styles */
+body.dark-mode .toggle-label {
+    background-color: #4B5563; /* gray-600 for dark mode off state */
+}
+body.dark-mode .toggle-checkbox {
+    background-color: var(--card-bg-dark, #1F2937); 
+    border-color: #4B5563; /* gray-600 */
+}
+body.dark-mode .toggle-checkbox:checked {
+    /* left: 1.0rem; is inherited from .toggle-checkbox:checked */
+    border-color: var(--legend-blue-dark, #A5B4FC);
+    background-color: var(--legend-blue-dark, #A5B4FC);
+}
+body.dark-mode .toggle-checkbox:checked + .toggle-label {
+    background-color: var(--legend-blue-dark, #A5B4FC);
+}
 [end of style.css]
