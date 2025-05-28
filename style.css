@@ -831,6 +831,11 @@ body.modal-open {
 .shadow-lg { box-shadow: 0 10px 15px -3px var(--shadow-color-light), 0 4px 6px -2px var(--shadow-color-light); }
 .shadow-md { box-shadow: 0 4px 6px -1px var(--shadow-color-light), 0 2px 4px -1px var(--shadow-color-light); }
 
+/* Custom radio button checked color */
+input[type="radio"].form-radio:checked {
+  accent-color: #9FB8DF; /* Directly using the hex code as requested */
+}
+
 /* ------------------------- DARK MODE STYLES ------------------------- */
 
 body.dark-mode {
@@ -1075,19 +1080,19 @@ body.dark-mode .food-entry-box:hover {
 body.dark-mode .fa-solid {
      color: inherit; /* This will make them inherit from their parent */
 }
-/* Specific overrides if inherit isn't enough or specific color is needed */
-body.dark-mode .nav-item i, body.dark-mode .nav-item span {
-    /* color is handled by .nav-item color var(--nav-text-color-dark) */
-}
+
 body.dark-mode .text-blue-600 { /* e.g., BMI recommendation text from index.html */
-    color: var(--accent-color-dark);
+    color: var(--legend-blue, #9FB8DF);
 }
+
 body.dark-mode .text-red-500 { /* e.g., delete buttons text color */
     color: var(--action-button-delete-text-dark);
 }
+
 body.dark-mode .border-red-500 { /* e.g., delete buttons border color */
     border-color: var(--action-button-delete-text-dark);
 }
+
 /* For buttons that turn text white on hover in light mode, make text dark on light bg in dark mode */
 body.dark-mode .hover\:text-white:hover {
     color: var(--accent-text-color-dark);
@@ -1158,4 +1163,3 @@ body.dark-mode .toggle-checkbox:checked {
 body.dark-mode .toggle-checkbox:checked + .toggle-label {
     background-color: var(--legend-blue-dark, #A5B4FC);
 }
-[end of style.css]

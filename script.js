@@ -1077,25 +1077,3 @@ async function fetchAndSaveBaseProducts() {
         alert(`Fehler beim Laden der Basisprodukte: ${error.message}.\nDie Produktliste ist möglicherweise leer.`);
     }
 }
-
-[end of script.js]
-
-[end of script.js]
-
-[end of script.js]
-
-[end of script.js]
-
-[end of script.js]
-
-[end of script.js]
-
-[end of script.js]
-
-[end of script.js]
-
-[end of script.js]
-
-[end of script.js]
-
-[end of script.js]
