@@ -277,7 +277,7 @@ function showPage(pageId) {
             initializeBmiCalculator(); 
             break;
         case 'meals-page':
-            pageTitle.textContent = 'Mahlzeiten – Verwaltung eigener Lebensmittelprodukte';
+            pageTitle.textContent = 'Mahlzeiten';
             initializeMealsPage(); 
             break;
         case 'overview-page':
