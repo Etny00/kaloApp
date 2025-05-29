@@ -372,7 +372,7 @@ body {
     display: none; /* Hide all page content by default */
     width: 100%;
     max-width: 480px; /* max-w-md from Tailwind for mobile */
-    padding: 1rem; /* p-4 from Tailwind */
+    padding: 0.75rem; /* p-4 from Tailwind */
     padding-bottom: 10rem; /* Increased padding-bottom to prevent overlap with fixed nav-bar */
 }
 
