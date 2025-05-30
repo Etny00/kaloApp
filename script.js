@@ -122,6 +122,7 @@ let closeAddProductToMealModalButton;
 let modalProductSearchInput;
 let modalProductList;
 let modalProductPortionInput_addToMeal; 
+let modalAnzahlInput; // Added for the new "Anzahl" (Quantity) input
 let cancelAddProductToMealButton;
 let confirmAddProductToMealButton;
 
@@ -1041,19 +1042,22 @@ function deleteFoodEntry() {
 }
 
 
-function addFoodToMeal(mealType, productData, portionGrams) {
-    if (!productData || isNaN(portionGrams) || portionGrams <= 0) {
-        alert("Bitte wählen Sie ein Produkt aus und geben Sie eine gültige Portionsgröße ein.");
+function addFoodToMeal(mealType, productData, totalConsumedPortionInGrams) {
+    if (!productData || isNaN(totalConsumedPortionInGrams) || totalConsumedPortionInGrams <= 0) {
+        // Updated alert message for clarity, though the core check remains similar.
+        alert("Bitte stellen Sie sicher, dass ein Produkt ausgewählt und eine gültige Gesamtportionsgröße (>0g) vorhanden ist.");
         return;
     }
     const kcalPer100g = parseFloat(productData['kcal/100g']) || 0;
     const carbsPer100g = parseFloat(productData['Kohlenhydrate (g)']) || 0;
     const proteinPer100g = parseFloat(productData['Eiweiß (g)']) || 0;
     const fatPer100g = parseFloat(productData['Fett (g)']) || 0;
-    const actualKcal = (kcalPer100g / 100) * portionGrams;
-    const actualCarbs = (carbsPer100g / 100) * portionGrams;
-    const actualProtein = (proteinPer100g / 100) * portionGrams;
-    const actualFat = (fatPer100g / 100) * portionGrams;
+    
+    const actualKcal = (kcalPer100g / 100) * totalConsumedPortionInGrams;
+    const actualCarbs = (carbsPer100g / 100) * totalConsumedPortionInGrams;
+    const actualProtein = (proteinPer100g / 100) * totalConsumedPortionInGrams;
+    const actualFat = (fatPer100g / 100) * totalConsumedPortionInGrams;
+    
     const newFoodEntry = {
         id: 'food-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9),
         name: productData.Produktname,
@@ -1061,7 +1065,7 @@ function addFoodToMeal(mealType, productData, portionGrams) {
         carbs: Math.round(actualCarbs),
         protein: Math.round(actualProtein),
         fat: Math.round(actualFat),
-        portion: portionGrams,
+        portion: Math.round(totalConsumedPortionInGrams), // Store the total consumed portion, rounded
         mealType: mealType
     };
     const todayDateKey = new Date().toISOString().split('T')[0];
@@ -1180,12 +1184,29 @@ function initializeAddFoodToMealModalListeners() {
     }
     if (confirmAddProductToMealButton) {
         confirmAddProductToMealButton.addEventListener('click', () => {
-            const portion = parseFloat(modalProductPortionInput_addToMeal.value);
-            if (selectedProductForMeal && !isNaN(portion) && portion > 0) {
-                addFoodToMeal(currentMealTypeForAdding, selectedProductForMeal, portion);
-            } else {
-                alert("Bitte Produkt auswählen und gültige Portion eingeben.");
+            let anzahl = 1;
+            // modalAnzahlInput is already declared and initialized globally/in DOMContentLoaded
+            if (modalAnzahlInput) { 
+                anzahl = parseInt(modalAnzahlInput.value);
+                if (isNaN(anzahl) || anzahl < 1) {
+                    anzahl = 1;
+                    modalAnzahlInput.value = '1'; // Correct the input field if invalid
+                }
             }
+
+            const portionPerUnit = parseFloat(modalProductPortionInput_addToMeal.value);
+
+            if (!selectedProductForMeal) {
+                alert("Bitte wählen Sie ein Produkt aus.");
+                return;
+            }
+            if (isNaN(portionPerUnit) || portionPerUnit <= 0) {
+                alert("Bitte eine gültige Portionsgröße pro Einheit eingeben.");
+                return;
+            }
+
+            const totalConsumedPortion = portionPerUnit * anzahl;
+            addFoodToMeal(currentMealTypeForAdding, selectedProductForMeal, totalConsumedPortion);
         });
     }
     const addMealButtons = document.querySelectorAll('.add-meal-button');
@@ -1202,6 +1223,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     modalProductSearchInput = document.getElementById('modalProductSearchInput');
     modalProductList = document.getElementById('modalProductList');
     modalProductPortionInput_addToMeal = document.getElementById('modalAddMeal_PortionInput'); // Corrected ID
+    modalAnzahlInput = document.getElementById('modalAnzahlInput'); // Initialize the new input field
     cancelAddProductToMealButton = document.getElementById('cancelAddProductToMealButton');
     confirmAddProductToMealButton = document.getElementById('confirmAddProductToMealButton');
     
