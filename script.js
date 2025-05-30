@@ -1322,7 +1322,6 @@ function processImportedData(importedData, filename) {
         console.log('Processing as base product import.');
         const newBaseSetWithIds = importedData.map(p => ({
             ...p,
-            // Ensure all imported fields are correctly mapped, especially if CSV has different headers/order
             "Produktname": p.Produktname || "Unbekanntes Produkt",
             "kcal/100g": parseFloat(p['kcal/100g']) || 0,
             "Kohlenhydrate (g)": parseFloat(p['Kohlenhydrate (g)']) || 0,
@@ -1333,11 +1332,10 @@ function processImportedData(importedData, filename) {
         }));
         
         const newBaseProductNames = new Set(newBaseSetWithIds.map(p => p.Produktname));
-        finalProducts = [...newBaseSetWithIds]; // Start with the new base set
+        finalProducts = [...newBaseSetWithIds]; 
 
         currentProducts.forEach(currentProd => {
             if (!newBaseProductNames.has(currentProd.Produktname)) {
-                // Ensure user-added product has an ID if it's missing (should ideally not happen if saved correctly before)
                 if (!currentProd.id) {
                      currentProd.id = (currentProd.Produktname || 'userprodukt').toLowerCase().replace(/\s/g, '-') + '-' + Math.random().toString(36).substr(2, 9);
                 }
@@ -1346,20 +1344,17 @@ function processImportedData(importedData, filename) {
         });
         alert('Basisprodukte wurden erfolgreich importiert und aktualisiert. Benutzerdefinierte Produkte wurden beibehalten.');
 
-    } else { // Additional product import
+    } else { 
         console.log('Processing as additional product import.');
-        // Start with a deep copy of current products
         finalProducts = JSON.parse(JSON.stringify(currentProducts)); 
         const existingProductNames = new Set(finalProducts.map(p => p.Produktname));
 
         importedData.forEach(importedProduct => {
-            // Ensure imported product has a name
             const productName = importedProduct.Produktname || "Unbekanntes Produkt";
-
             if (!existingProductNames.has(productName)) {
                 const newProduct = {
-                    ...importedProduct, // Spread imported data first
-                    "Produktname": productName, // Ensure name is set
+                    ...importedProduct, 
+                    "Produktname": productName, 
                     "kcal/100g": parseFloat(importedProduct['kcal/100g']) || 0,
                     "Kohlenhydrate (g)": parseFloat(importedProduct['Kohlenhydrate (g)']) || 0,
                     "Eiweiß (g)": parseFloat(importedProduct['Eiweiß (g)']) || 0,
@@ -1368,7 +1363,7 @@ function processImportedData(importedData, filename) {
                     id: productName.toLowerCase().replace(/\s/g, '-') + '-' + Math.random().toString(36).substr(2, 9)
                 };
                 finalProducts.push(newProduct);
-                existingProductNames.add(productName); // Add to set to handle duplicates within the imported file
+                existingProductNames.add(productName); 
             } else {
                 console.log(`Produkt "${productName}" existiert bereits und wird übersprungen.`);
             }
@@ -1379,13 +1374,9 @@ function processImportedData(importedData, filename) {
     products = finalProducts;
     saveProductsToLocalStorage();
     
-    // Re-render if on meals page and productTableBody is available
     if (document.getElementById('meals-page').classList.contains('active') && productTableBody) {
         renderProductTable();
     } else if (typeof renderProductTable === "function") {
-        // If not on meals page, but function exists, call it to ensure data consistency if other views depend on it.
-        // Or, set a flag to refresh when meals page is next visited.
-        // For now, direct call if function exists.
         console.log("Product table not directly visible, but renderProductTable called for data consistency.");
         renderProductTable(); 
     }
