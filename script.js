@@ -463,7 +463,7 @@ async function initializeMealsPage() {
         productCountDisplay = document.getElementById('productCountDisplay');
         productTableBody = document.getElementById('productTableBody'); 
         exportCsvButton = document.getElementById('exportCsvButton');
-        importCsvButton = document.getElementById('importCsvButton');
+        // importCsvButton is now importProductsButton and handled in DOMContentLoaded
         prevPageButton = document.getElementById('prevPageButton'); 
         nextPageButton = document.getElementById('nextPageButton'); 
         paginationInfo = document.getElementById('paginationInfo'); 
@@ -484,7 +484,7 @@ async function initializeMealsPage() {
         if (saveProductButton) saveProductButton.addEventListener('click', saveProduct);
         if (productSearchInput) productSearchInput.addEventListener('input', () => { currentPage = 1; renderProductTable(); });
         if (exportCsvButton) exportCsvButton.addEventListener('click', exportProductsAsCsv);
-        if (importCsvButton) importCsvButton.addEventListener('click', importProductsFromCsv);
+        // Listener for importProductsButton is now in DOMContentLoaded
         if (prevPageButton) prevPageButton.addEventListener('click', prevPage);
         if (nextPageButton) nextPageButton.addEventListener('click', nextPage);
         if (itemsPerPageSelect) itemsPerPageSelect.addEventListener('change', changeItemsPerPage);
@@ -1243,7 +1243,189 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (updateButton) {
         updateButton.addEventListener('click', updateBaseProducts);
     }
+
+    const importButton = document.getElementById('importProductsButton');
+    const fileInputElement = document.getElementById('fileInput');
+
+    if (importButton && fileInputElement) {
+        importButton.addEventListener('click', () => {
+            fileInputElement.click(); // Trigger click on hidden file input
+        });
+
+        fileInputElement.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                handleImportedFile(file);
+            }
+            event.target.value = null; // Reset file input
+        });
+    }
 });
+
+function parseCsvData(csvContent) {
+    const products = [];
+    const lines = csvContent.trim().split('\n'); 
+    if (lines.length < 2) {
+        throw new Error('CSV muss eine Header-Zeile und mindestens eine Datenzeile enthalten.');
+    }
+
+    const delimiter = lines[0].includes(';') ? ';' : ',';
+    
+    const headers = lines[0].split(delimiter).map(h => h.trim().replace(/^"|"$/g, ''));
+    // For now, we assume a fixed order corresponding to:
+    // "Produktname", "kcal/100g", "Kohlenhydrate (g)", "Eiweiß (g)", "Fett (g)", "Portionsgröße (g/ml)"
+
+    for (let i = 1; i < lines.length; i++) {
+        if (lines[i].trim() === '') continue; 
+        const values = lines[i].split(delimiter).map(v => v.trim().replace(/^"|"$/g, ''));
+        const product = {
+            "Produktname": values[0] || 'Unbekanntes Produkt',
+            "kcal/100g": parseFloat(values[1]) || 0,
+            "Kohlenhydrate (g)": parseFloat(values[2]) || 0,
+            "Eiweiß (g)": parseFloat(values[3]) || 0,
+            "Fett (g)": parseFloat(values[4]) || 0,
+            "Portionsgröße (g/ml)": values[5] || 'N/A'
+            // id will be assigned later in processImportedData if needed
+        };
+        products.push(product);
+    }
+    return products;
+}
+
+function processImportedData(importedData, filename) {
+    console.log('Starting import process for:', filename);
+
+    if (!Array.isArray(importedData)) {
+        alert('Fehler: Importierte Daten sind kein Array. Import abgebrochen.');
+        return;
+    }
+
+    let currentProducts = [];
+    try {
+        const storedProducts = localStorage.getItem('userProducts');
+        if (storedProducts) {
+            currentProducts = JSON.parse(storedProducts);
+        }
+        if (!Array.isArray(currentProducts)) { // Ensure currentProducts is an array
+            console.warn('localStorage userProducts was not an array, resetting to empty array.');
+            currentProducts = [];
+        }
+    } catch (e) {
+        console.error('Fehler beim Parsen von userProducts aus localStorage:', e);
+        currentProducts = []; // Fallback to empty array on error
+    }
+    
+    let finalProducts = [];
+    const isBaseImport = filename.toLowerCase() === 'base_products.json' || filename.toLowerCase() === 'base_products.csv';
+
+    if (isBaseImport) {
+        console.log('Processing as base product import.');
+        const newBaseSetWithIds = importedData.map(p => ({
+            ...p,
+            // Ensure all imported fields are correctly mapped, especially if CSV has different headers/order
+            "Produktname": p.Produktname || "Unbekanntes Produkt",
+            "kcal/100g": parseFloat(p['kcal/100g']) || 0,
+            "Kohlenhydrate (g)": parseFloat(p['Kohlenhydrate (g)']) || 0,
+            "Eiweiß (g)": parseFloat(p['Eiweiß (g)']) || 0,
+            "Fett (g)": parseFloat(p['Fett (g)']) || 0,
+            "Portionsgröße (g/ml)": p['Portionsgröße (g/ml)'] || 'N/A',
+            id: (p.Produktname || 'produkt').toLowerCase().replace(/\s/g, '-') + '-' + Math.random().toString(36).substr(2, 9)
+        }));
+        
+        const newBaseProductNames = new Set(newBaseSetWithIds.map(p => p.Produktname));
+        finalProducts = [...newBaseSetWithIds]; // Start with the new base set
+
+        currentProducts.forEach(currentProd => {
+            if (!newBaseProductNames.has(currentProd.Produktname)) {
+                // Ensure user-added product has an ID if it's missing (should ideally not happen if saved correctly before)
+                if (!currentProd.id) {
+                     currentProd.id = (currentProd.Produktname || 'userprodukt').toLowerCase().replace(/\s/g, '-') + '-' + Math.random().toString(36).substr(2, 9);
+                }
+                finalProducts.push(currentProd);
+            }
+        });
+        alert('Basisprodukte wurden erfolgreich importiert und aktualisiert. Benutzerdefinierte Produkte wurden beibehalten.');
+
+    } else { // Additional product import
+        console.log('Processing as additional product import.');
+        // Start with a deep copy of current products
+        finalProducts = JSON.parse(JSON.stringify(currentProducts)); 
+        const existingProductNames = new Set(finalProducts.map(p => p.Produktname));
+
+        importedData.forEach(importedProduct => {
+            // Ensure imported product has a name
+            const productName = importedProduct.Produktname || "Unbekanntes Produkt";
+
+            if (!existingProductNames.has(productName)) {
+                const newProduct = {
+                    ...importedProduct, // Spread imported data first
+                    "Produktname": productName, // Ensure name is set
+                    "kcal/100g": parseFloat(importedProduct['kcal/100g']) || 0,
+                    "Kohlenhydrate (g)": parseFloat(importedProduct['Kohlenhydrate (g)']) || 0,
+                    "Eiweiß (g)": parseFloat(importedProduct['Eiweiß (g)']) || 0,
+                    "Fett (g)": parseFloat(importedProduct['Fett (g)']) || 0,
+                    "Portionsgröße (g/ml)": importedProduct['Portionsgröße (g/ml)'] || 'N/A',
+                    id: productName.toLowerCase().replace(/\s/g, '-') + '-' + Math.random().toString(36).substr(2, 9)
+                };
+                finalProducts.push(newProduct);
+                existingProductNames.add(productName); // Add to set to handle duplicates within the imported file
+            } else {
+                console.log(`Produkt "${productName}" existiert bereits und wird übersprungen.`);
+            }
+        });
+        alert('Zusätzliche Produkte wurden importiert. Duplikate wurden übersprungen.');
+    }
+
+    products = finalProducts;
+    saveProductsToLocalStorage();
+    
+    // Re-render if on meals page and productTableBody is available
+    if (document.getElementById('meals-page').classList.contains('active') && productTableBody) {
+        renderProductTable();
+    } else if (typeof renderProductTable === "function") {
+        // If not on meals page, but function exists, call it to ensure data consistency if other views depend on it.
+        // Or, set a flag to refresh when meals page is next visited.
+        // For now, direct call if function exists.
+        console.log("Product table not directly visible, but renderProductTable called for data consistency.");
+        renderProductTable(); 
+    }
+    console.log('Import process completed. Products updated.');
+}
+
+function handleImportedFile(file) {
+    const filename = file.name;
+    const fileType = filename.split('.').pop().toLowerCase();
+    const reader = new FileReader();
+
+    reader.onload = (event) => {
+        const fileContent = event.target.result;
+        let importedData = [];
+
+        try {
+            if (fileType === 'json') {
+                importedData = JSON.parse(fileContent);
+                if (!Array.isArray(importedData)) {
+                    throw new Error('JSON-Datei enthält kein Array von Produkten.');
+                }
+            } else if (fileType === 'csv') {
+                importedData = parseCsvData(fileContent);
+            } else {
+                alert('Nicht unterstützter Dateityp. Bitte wählen Sie eine CSV- oder JSON-Datei aus.');
+                return;
+            }
+            processImportedData(importedData, filename);
+        } catch (e) {
+            alert('Fehler beim Parsen der Datei: ' + e.message);
+            return;
+        }
+    };
+
+    reader.onerror = (error) => {
+        alert('Fehler beim Lesen der Datei: ' + reader.error);
+    };
+
+    reader.readAsText(file);
+}
 
 async function updateBaseProducts() {
     console.log("Updating base products...");
