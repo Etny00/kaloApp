@@ -390,12 +390,12 @@ function initializeBmiCalculator() {
                 };
                 localStorage.setItem(bmiInputsKey, JSON.stringify(bmiData));
 
-                // Display BMI results directly on page
-                if (bmiResultDiv) bmiResultDiv.textContent = `Dein BMI: ${bmi.toFixed(2)}`;
-                if (bmiCategoryDiv) bmiCategoryDiv.textContent = `Kategorie: ${category}`;
-                if (calorieRecommendationDiv) {
-                    calorieRecommendationDiv.textContent = `Zum ${goal === 'lose' ? 'Abnehmen' : (goal === 'gain' ? 'Zunehmen' : 'Gewicht halten')} wird ein Ziel von ca. ${recommendedCalories.toFixed(0)} kcal pro Tag empfohlen.`;
-                }
+                // Display BMI results directly on page (Reverted)
+                // if (bmiResultDiv) bmiResultDiv.textContent = `Dein BMI: ${bmi.toFixed(2)}`;
+                // if (bmiCategoryDiv) bmiCategoryDiv.textContent = `Kategorie: ${category}`;
+                // if (calorieRecommendationDiv) {
+                //     calorieRecommendationDiv.textContent = `Zum ${goal === 'lose' ? 'Abnehmen' : (goal === 'gain' ? 'Zunehmen' : 'Gewicht halten')} wird ein Ziel von ca. ${recommendedCalories.toFixed(0)} kcal pro Tag empfohlen.`;
+                // }
 
                 openBmiResultModal(bmi.toFixed(2), category, recommendedCalories.toFixed(0), goal);
             });
