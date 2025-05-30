@@ -500,6 +500,20 @@ function renderProductTable() {
     productTableBody.innerHTML = ''; 
     const searchTerm = productSearchInput ? productSearchInput.value.toLowerCase() : '';
     const filteredProducts = products.filter(p => p.Produktname.toLowerCase().includes(searchTerm));
+
+    // Sort filtered products alphabetically by Produktname (case-insensitive)
+    filteredProducts.sort((a, b) => {
+        const nameA = a.Produktname.toLowerCase();
+        const nameB = b.Produktname.toLowerCase();
+        if (nameA < nameB) {
+            return -1;
+        }
+        if (nameA > nameB) {
+            return 1;
+        }
+        return 0; // names are equal
+    });
+
     const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
     if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
     else if (totalPages === 0) currentPage = 0;
@@ -1224,7 +1238,69 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateTodayPageOverallMetrics();
 
     showPage('today-page'); 
+
+    const updateButton = document.getElementById('updateBaseProductsButton');
+    if (updateButton) {
+        updateButton.addEventListener('click', updateBaseProducts);
+    }
 });
+
+async function updateBaseProducts() {
+    console.log("Updating base products...");
+    try {
+        const response = await fetch('base_products.json');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
+        }
+        const newBaseData = await response.json();
+
+        if (!Array.isArray(newBaseData)) {
+            throw new Error("Fetched base products data is not an array.");
+        }
+
+        let currentProducts = JSON.parse(localStorage.getItem('userProducts')) || [];
+        if (!Array.isArray(currentProducts)) {
+            console.warn("currentProducts from localStorage was not an array, resetting.");
+            currentProducts = [];
+        }
+
+        // Assign unique IDs to new base products if they don't have one (or ensure they are unique)
+        const processedNewBaseData = newBaseData.map(item => ({
+            ...item,
+            id: item.id || (item.Produktname.toLowerCase().replace(/\s/g, '-') + '-' + Math.random().toString(36).substr(2, 9))
+        }));
+
+        const mergedProducts = [];
+        const newBaseProductNames = new Set(processedNewBaseData.map(p => p.Produktname));
+
+        // Add all new/updated base products first
+        processedNewBaseData.forEach(p => mergedProducts.push(p));
+
+        // Add user's products that are not in the new base product list
+        currentProducts.forEach(currentProd => {
+            if (!newBaseProductNames.has(currentProd.Produktname)) {
+                // Ensure user-added products also have an ID
+                if (!currentProd.id) {
+                    currentProd.id = currentProd.Produktname.toLowerCase().replace(/\s/g, '-') + '-' + Math.random().toString(36).substr(2, 9);
+                }
+                mergedProducts.push(currentProd);
+            }
+        });
+
+        products = mergedProducts;
+        saveProductsToLocalStorage();
+        
+        // Re-render if on meals page and productTableBody is available
+        if (document.getElementById('meals-page').classList.contains('active') && productTableBody) {
+            renderProductTable();
+        }
+        alert('Produktdatenbank wurde erfolgreich aktualisiert!');
+
+    } catch (error) {
+        console.error('Error updating base products:', error);
+        alert(`Fehler beim Aktualisieren der Produktdatenbank: ${error.message}`);
+    }
+}
 
 function saveProductsToLocalStorage() {
     try {
