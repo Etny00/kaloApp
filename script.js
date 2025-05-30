@@ -11,6 +11,7 @@ const glassSize = 0.25; // Size of a water glass in liters (assumption)
 const userCalorieGoalKey = 'userCalorieGoal';
 const userWaterGoalKey = 'userWaterGoal';
 const userDailyWaterLogKey = 'userDailyWaterLog'; 
+const bmiInputsKey = 'bmiInputs';
 
 // Product data
 let products = []; 
@@ -309,7 +310,7 @@ function showPage(pageId) {
 }
 
 function initializeBmiCalculator() {
-    if (!calculateBmiButton) { 
+    if (!calculateBmiButton) {
         calculateBmiButton = document.getElementById('calculateBmi');
         heightInput = document.getElementById('height');
         weightInput = document.getElementById('weight');
@@ -320,6 +321,28 @@ function initializeBmiCalculator() {
         bmiResultDiv = document.getElementById('bmiResult');
         bmiCategoryDiv = document.getElementById('bmiCategory');
         calorieRecommendationDiv = document.getElementById('calorieRecommendation');
+
+        // Load BMI input data from local storage
+        const storedBmiInputs = localStorage.getItem(bmiInputsKey);
+        if (storedBmiInputs) {
+            try {
+                const bmiData = JSON.parse(storedBmiInputs);
+                if (heightInput) heightInput.value = bmiData.heightCm || '';
+                if (weightInput) weightInput.value = bmiData.weightKg || '';
+                if (ageInput) ageInput.value = bmiData.ageYears || '';
+                if (genderInputs && bmiData.gender) {
+                    genderInputs.forEach(radio => {
+                        if (radio.value === bmiData.gender) {
+                            radio.checked = true;
+                        }
+                    });
+                }
+                if (activityLevelSelect) activityLevelSelect.value = bmiData.activityLevel || '1.2';
+                if (goalSelect) goalSelect.value = bmiData.goal || 'maintain';
+            } catch (error) {
+                console.error('Error parsing BMI inputs from local storage:', error);
+            }
+        }
 
         if (calculateBmiButton) {
             calculateBmiButton.addEventListener('click', () => {
@@ -355,6 +378,25 @@ function initializeBmiCalculator() {
                 let recommendedCalories = tdee;
                 if (goal === 'lose') recommendedCalories = tdee - 500;
                 else if (goal === 'gain') recommendedCalories = tdee + 500;
+
+                // Store BMI input data
+                const bmiData = {
+                    heightCm,
+                    weightKg,
+                    ageYears,
+                    gender,
+                    activityLevel,
+                    goal
+                };
+                localStorage.setItem(bmiInputsKey, JSON.stringify(bmiData));
+
+                // Display BMI results directly on page
+                if (bmiResultDiv) bmiResultDiv.textContent = `Dein BMI: ${bmi.toFixed(2)}`;
+                if (bmiCategoryDiv) bmiCategoryDiv.textContent = `Kategorie: ${category}`;
+                if (calorieRecommendationDiv) {
+                    calorieRecommendationDiv.textContent = `Zum ${goal === 'lose' ? 'Abnehmen' : (goal === 'gain' ? 'Zunehmen' : 'Gewicht halten')} wird ein Ziel von ca. ${recommendedCalories.toFixed(0)} kcal pro Tag empfohlen.`;
+                }
+
                 openBmiResultModal(bmi.toFixed(2), category, recommendedCalories.toFixed(0), goal);
             });
         }
@@ -399,6 +441,11 @@ function initializeSettings() {
 
     if (saveSettingsButton && !saveSettingsButton.hasAttribute('data-listener-attached')) {
         saveSettingsButton.addEventListener('click', () => {
+            // Make sure newCalorieGoalInput and newWaterGoalInput are defined before accessing their value
+            if (!newCalorieGoalInput || !newWaterGoalInput) {
+                console.error("Settings input fields not found during save.");
+                return;
+            }
             const newCalorieGoalValue = parseInt(newCalorieGoalInput.value);
             const newWaterGoalValue = parseFloat(newWaterGoalInput.value);
             
@@ -441,6 +488,48 @@ function initializeSettings() {
             saveDarkModePreference(isEnabled);
         });
         darkModeToggle.setAttribute('data-listener-attached', 'true');
+    }
+
+    const resetAppDataButton = document.getElementById('resetAppDataButton');
+    if (resetAppDataButton && !resetAppDataButton.hasAttribute('data-listener-attached')) {
+        resetAppDataButton.addEventListener('click', resetAppData);
+        resetAppDataButton.setAttribute('data-listener-attached', 'true');
+    }
+}
+
+function resetAppData() {
+    if (confirm("Möchten Sie wirklich alle Ihre Daten zurücksetzen? Dieser Vorgang kann nicht rückgängig gemacht werden und setzt die App auf den Ursprungszustand zurück (Basisprodukte werden neu geladen).")) {
+        // Clear from localStorage
+        localStorage.removeItem(userCalorieGoalKey);
+        localStorage.removeItem(userWaterGoalKey);
+        localStorage.removeItem(userDailyWaterLogKey);
+        localStorage.removeItem('userDailyFoodEntries'); // Direct key string
+        localStorage.removeItem(bmiInputsKey); // Const key
+        localStorage.removeItem('darkModeEnabled'); // Direct key string
+        localStorage.removeItem('userProducts'); // Direct key string
+
+        // Reset in-memory variables to defaults
+        calorieGoal = 2000;
+        waterGoal = 2.5;
+        Object.keys(dailyFoodEntries).forEach(key => delete dailyFoodEntries[key]); // Clear object
+        Object.keys(dailyWaterLog).forEach(key => delete dailyWaterLog[key]); // Clear object
+        products = []; // Will be repopulated
+
+        // Re-fetch base products
+        asyncLoadProductsFromLocalStorage().then(() => {
+            // Optionally reset UI elements on the current page
+            if (newCalorieGoalInput) newCalorieGoalInput.value = calorieGoal;
+            if (newWaterGoalInput) newWaterGoalInput.value = waterGoal;
+            if (darkModeToggle) darkModeToggle.checked = false; // Assuming default is light mode
+            applyDarkMode(false); // Apply light mode visually
+
+            alert("Alle Daten wurden erfolgreich zurückgesetzt. Die App wird neu geladen.");
+            location.reload();
+        }).catch(error => {
+            console.error("Fehler beim Neuladen der Basisprodukte nach Reset:", error);
+            alert("Daten teilweise zurückgesetzt, aber Fehler beim Laden der Basisprodukte. Bitte manuell neu laden.");
+            location.reload(); // Still reload to reflect cleared data
+        });
     }
 }
 
