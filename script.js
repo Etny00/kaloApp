@@ -97,6 +97,7 @@ let modalFatInput;
 let modalPortionInput; 
 let saveFoodEntryButton;
 let deleteFoodEntryButton;
+let modalMealTypeSelect; // Added for meal type dropdown in food detail modal
 
 let currentEditingFoodEntry = null; 
 let currentEditingDateKey = null; 
@@ -268,7 +269,7 @@ function showPage(pageId) {
             waterConsumed = dailyWaterLog[todayKey] || 0;
             console.log('[SHOWPAGE TODAY] Setting waterConsumed. Key:', todayKey, 'Value from dailyWaterLog:', dailyWaterLog[todayKey], 'Resulting waterConsumed:', waterConsumed);
             updateWaterDisplay(); 
-
+            initializeTodayPageEventListeners(); // Call initializer for today page
             renderTodayPageMealSections();
             updateTodayPageOverallMetrics();
             break;
@@ -637,17 +638,72 @@ function initializeOverviewPage() {
         modalFoodNameDisplay = document.getElementById('modalFoodNameDisplay');
         modalKcalInput = document.getElementById('modalKcalInput');
         modalCarbsInput = document.getElementById('modalCarbsInput');
-        modalProteinInput = document.getElementById('modalProteinInput');
-        modalFatInput = document.getElementById('modalFatInput');
-        modalPortionInput = document.getElementById('modalPortionInput'); 
-        saveFoodEntryButton = document.getElementById('saveFoodEntryButton');
-        deleteFoodEntryButton = document.getElementById('deleteFoodEntryButton');
-
+        // DOM elements for the modal are now initialized in initializeFoodDetailModalOnce
+        // Event listeners for modal buttons (save, delete, close) are also in initializeFoodDetailModalOnce
+        // Event listeners for prev/next month buttons remain here as they are specific to the overview page
         if(prevMonthButton) prevMonthButton.addEventListener('click', () => { currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1); renderCalendar(currentCalendarDate); updateDailySummary(selectedCalendarDate); });
         if(nextMonthButton) nextMonthButton.addEventListener('click', () => { currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1); renderCalendar(currentCalendarDate); updateDailySummary(selectedCalendarDate); });
-        if(closeModalButton) closeModalButton.addEventListener('click', closeFoodDetailModal); 
-        if(saveFoodEntryButton) saveFoodEntryButton.addEventListener('click', () => saveEditedFoodEntry(currentEditingFoodEntry, currentEditingDateKey));
-        if(deleteFoodEntryButton) deleteFoodEntryButton.addEventListener('click', () => deleteFoodEntry(currentEditingFoodEntry, currentEditingDateKey));
+    }
+}
+
+function saveEditedFoodEntry() {
+    console.log("[saveEditedFoodEntry] Called.");
+    if (!currentEditingFoodEntry || !currentEditingDateKey) {
+        console.error("[saveEditedFoodEntry] Error: No food entry is currently being edited or dateKey is missing.");
+        alert("Fehler: Kein Eintrag zum Speichern ausgewählt oder Datumsschlüssel fehlt.");
+        return;
+    }
+
+    const newMealType = modalMealTypeSelect ? modalMealTypeSelect.value : currentEditingFoodEntry.mealType;
+    const newKcal = modalKcalInput ? parseInt(modalKcalInput.value) : currentEditingFoodEntry.kcal;
+    const newCarbs = modalCarbsInput ? parseInt(modalCarbsInput.value) || 0 : currentEditingFoodEntry.carbs;
+    const newProtein = modalProteinInput ? parseInt(modalProteinInput.value) || 0 : currentEditingFoodEntry.protein;
+    const newFat = modalFatInput ? parseInt(modalFatInput.value) || 0 : currentEditingFoodEntry.fat;
+    const newPortion = modalPortionInput ? parseInt(modalPortionInput.value) || 0 : currentEditingFoodEntry.portion;
+
+    if (isNaN(newKcal) || newKcal < 0) {
+        alert("Bitte gültige Kalorienzahl eingeben.");
+        return;
+    }
+    if (isNaN(newPortion) || newPortion < 0) {
+        alert("Bitte gültige Portionsgröße eingeben.");
+        return;
+    }
+    
+    const entriesForDate = dailyFoodEntries[currentEditingDateKey];
+    if (!entriesForDate) {
+        console.error(`[saveEditedFoodEntry] No entries found for dateKey: ${currentEditingDateKey}`);
+        alert("Fehler: Keine Einträge für das angegebene Datum gefunden.");
+        return;
+    }
+
+    const entryIndex = entriesForDate.findIndex(entry => entry.id === currentEditingFoodEntry.id);
+
+    if (entryIndex !== -1) {
+        entriesForDate[entryIndex].mealType = newMealType;
+        entriesForDate[entryIndex].kcal = newKcal;
+        entriesForDate[entryIndex].carbs = newCarbs;
+        entriesForDate[entryIndex].protein = newProtein;
+        entriesForDate[entryIndex].fat = newFat;
+        entriesForDate[entryIndex].portion = newPortion;
+        // Name is not editable in the current modal design, so not changing it.
+
+        saveDailyFoodEntriesToLocalStorage();
+        renderTodayPageMealSections(); // Refresh UI for Today page
+        updateTodayPageOverallMetrics(); // Update overall metrics on Today page
+
+        // Check if the overview page's selected date is the one being edited
+        const overviewDateKey = `${selectedCalendarDate.getFullYear()}-${String(selectedCalendarDate.getMonth() + 1).padStart(2, '0')}-${String(selectedCalendarDate.getDate()).padStart(2, '0')}`;
+        if (currentEditingDateKey === overviewDateKey) {
+            updateDailySummary(selectedCalendarDate); // Refresh Overview page if it's the same day
+        }
+        
+        console.log("[saveEditedFoodEntry] Entry updated successfully:", entriesForDate[entryIndex]);
+        alert("Eintrag erfolgreich gespeichert!");
+        closeFoodDetailModal();
+    } else {
+        console.error(`[saveEditedFoodEntry] Food entry with ID ${currentEditingFoodEntry.id} not found in dateKey ${currentEditingDateKey}.`);
+        alert("Fehler: Zu bearbeitender Eintrag nicht gefunden.");
     }
 }
 
@@ -756,6 +812,34 @@ function updateDailySummary(date) {
     if (dailyFatArc) { dailyFatArc.setAttribute('stroke-dasharray', `${fatP * circ} ${circ * (1 - fatP)}`); dailyFatArc.setAttribute('stroke-dashoffset', `-${(carbsP + proteinP) * circ}`); }
     if (totalKcal === 0 && dailyCarbsArc && dailyProteinArc && dailyFatArc) [dailyCarbsArc, dailyProteinArc, dailyFatArc].forEach(arc => arc.setAttribute('stroke-dasharray', `0 ${circ}`));
 }
+
+// Function to open the food detail modal and populate it with entry data
+function openFoodDetailModal(foodEntry, dateKey) {
+    console.log("[openFoodDetailModal] Called with foodEntry:", foodEntry, "and dateKey:", dateKey);
+    currentEditingFoodEntry = foodEntry; // Ensure this is set
+    currentEditingDateKey = dateKey; // Ensure this is set
+
+    if (modalFoodNameDisplay) modalFoodNameDisplay.textContent = foodEntry.name;
+    if (modalKcalInput) modalKcalInput.value = foodEntry.kcal;
+    if (modalCarbsInput) modalCarbsInput.value = foodEntry.carbs || '';
+    if (modalProteinInput) modalProteinInput.value = foodEntry.protein || '';
+    if (modalFatInput) modalFatInput.value = foodEntry.fat || '';
+    if (modalPortionInput) modalPortionInput.value = foodEntry.portion || '';
+
+    if (modalMealTypeSelect && foodEntry.mealType) {
+        modalMealTypeSelect.value = foodEntry.mealType;
+    } else if (modalMealTypeSelect) {
+        modalMealTypeSelect.value = ''; // Default or clear if no mealType
+    }
+
+    if (foodDetailModal) {
+        foodDetailModal.classList.remove('hidden');
+        console.log("[openFoodDetailModal] foodDetailModal is now visible.");
+    } else {
+        console.error("[openFoodDetailModal] foodDetailModal element not found!");
+    }
+}
+
 function openProductDetailModal(product) {
     currentEditingProduct = product;
     if(modalProductNameDisplay) modalProductNameDisplay.textContent = product.Produktname;
@@ -812,13 +896,13 @@ function closeProductSelectionModal() {
 
 function renderModalProductList() {
     if (!modalProductList || !modalProductSearchInput) return;
-    console.log('renderModalProductList called. Search term:', modalProductSearchInput.value); 
+    console.log('renderModalProductList called. Search term:', modalProductSearchInput.value);
     const searchTerm = modalProductSearchInput.value.toLowerCase();
-    console.log('Total products available for search:', products.length); 
+    console.log('Total products available for search:', products.length);
     const filtered = products.filter(p => p.Produktname.toLowerCase().includes(searchTerm));
-    console.log('Number of products after filtering:', filtered.length); 
-    
-    modalProductList.innerHTML = ''; 
+    console.log('Number of products after filtering:', filtered.length);
+
+    modalProductList.innerHTML = '';
 
     filtered.forEach(product => {
         const productDiv = document.createElement('div');
@@ -828,13 +912,120 @@ function renderModalProductList() {
             selectedProductForMeal = product;
             Array.from(modalProductList.children).forEach(child => child.classList.remove('bg-blue-200', 'selected'));
             productDiv.classList.add('bg-blue-200', 'selected');
-            if (modalProductPortionInput_addToMeal && product['Portionsgröße (g/ml)']) {
-                 modalProductPortionInput_addToMeal.value = product['Portionsgröße (g/ml)'];
+            
+            if (modalProductPortionInput_addToMeal) { // Check if the input element exists
+                const defaultPortionText = product['Portionsgröße (g/ml)'];
+                const portionValue = parseFloat(defaultPortionText); // Attempt to parse
+                
+                if (defaultPortionText && !isNaN(portionValue) && portionValue > 0) {
+                    modalProductPortionInput_addToMeal.value = portionValue;
+                } else {
+                    modalProductPortionInput_addToMeal.value = ''; // Clear if no valid portion size or "N/A"
+                }
             }
         });
         modalProductList.appendChild(productDiv);
     });
 }
+
+// Initializes Today Page specific event listeners
+function initializeTodayPageEventListeners() {
+    console.log("[initializeTodayPageEventListeners] Called for Today page.");
+    // Most modal elements are globally initialized by initializeFoodDetailModalOnce.
+    // This function is for any other listeners specific to the "Heute" page.
+}
+
+function initializeFoodDetailModalOnce() {
+    console.log("[initializeFoodDetailModalOnce] Called to set up food detail modal elements and listeners.");
+    foodDetailModal = document.getElementById('foodDetailModal');
+    closeModalButton = document.getElementById('closeModalButton');
+    modalFoodNameDisplay = document.getElementById('modalFoodNameDisplay');
+    modalKcalInput = document.getElementById('modalKcalInput');
+    modalCarbsInput = document.getElementById('modalCarbsInput');
+    modalProteinInput = document.getElementById('modalProteinInput');
+    modalFatInput = document.getElementById('modalFatInput');
+    modalPortionInput = document.getElementById('modalPortionInput');
+    modalMealTypeSelect = document.getElementById('modalMealTypeSelect');
+    saveFoodEntryButton = document.getElementById('saveFoodEntryButton');
+    deleteFoodEntryButton = document.getElementById('deleteFoodEntryButton');
+
+    if(closeModalButton) {
+        closeModalButton.addEventListener('click', closeFoodDetailModal);
+    } else {
+        console.error("[initializeFoodDetailModalOnce] closeModalButton not found.");
+    }
+
+    if(saveFoodEntryButton) {
+        // Ensure currentEditingFoodEntry and currentEditingDateKey are used from the global scope
+        // as they are set when the modal is opened.
+        saveFoodEntryButton.addEventListener('click', () => saveEditedFoodEntry()); 
+    } else {
+        console.error("[initializeFoodDetailModalOnce] saveFoodEntryButton not found.");
+    }
+
+    if(deleteFoodEntryButton) {
+        // Ensure currentEditingFoodEntry and currentEditingDateKey are used from the global scope.
+        deleteFoodEntryButton.addEventListener('click', () => deleteFoodEntry()); // Call without arguments
+    } else {
+        console.error("[initializeFoodDetailModalOnce] deleteFoodEntryButton not found.");
+    }
+}
+
+function deleteFoodEntry() {
+    console.log("[deleteFoodEntry] Called. Attempting to delete:", currentEditingFoodEntry, "from date:", currentEditingDateKey);
+
+    if (!currentEditingFoodEntry || !currentEditingDateKey) {
+        console.error("[deleteFoodEntry] Error: No food entry is currently being edited or dateKey is missing.");
+        alert("Fehler: Kein Eintrag zum Löschen ausgewählt oder Datumsschlüssel fehlt.");
+        return;
+    }
+
+    if (!confirm(`Möchten Sie den Eintrag "${currentEditingFoodEntry.name}" wirklich löschen?`)) {
+        return; // User cancelled
+    }
+
+    const entriesForDate = dailyFoodEntries[currentEditingDateKey];
+    if (!entriesForDate) {
+        console.error(`[deleteFoodEntry] No entries found for dateKey: ${currentEditingDateKey}`);
+        alert("Fehler: Keine Einträge für das angegebene Datum gefunden, um etwas zu löschen.");
+        closeFoodDetailModal(); // Close modal as state is inconsistent
+        return;
+    }
+
+    const entryIndex = entriesForDate.findIndex(entry => entry.id === currentEditingFoodEntry.id);
+
+    if (entryIndex !== -1) {
+        entriesForDate.splice(entryIndex, 1);
+        console.log(`[deleteFoodEntry] Entry with ID ${currentEditingFoodEntry.id} deleted from dateKey ${currentEditingDateKey}.`);
+        
+        saveDailyFoodEntriesToLocalStorage();
+        
+        // Refresh UI
+        renderTodayPageMealSections(); 
+        updateTodayPageOverallMetrics(); 
+        
+        // Check if the overview page's selected date is the one being edited/viewed
+        // This ensures that if the deletion happens from the overview page, its summary also updates.
+        const overviewDateKey = `${selectedCalendarDate.getFullYear()}-${String(selectedCalendarDate.getMonth() + 1).padStart(2, '0')}-${String(selectedCalendarDate.getDate()).padStart(2, '0')}`;
+        if (currentEditingDateKey === overviewDateKey) {
+            updateDailySummary(selectedCalendarDate);
+        } else {
+            // If deletion happened on a different day than currently viewed on overview,
+            // we might still want to update the summary if that day is selectedCalendarDate.
+            // However, currentEditingDateKey refers to the date of the item, 
+            // and selectedCalendarDate is the one active on the overview calendar.
+            // The above condition correctly handles updating the overview if the deleted item's date matches the selected calendar date.
+        }
+        
+        alert("Eintrag erfolgreich gelöscht!");
+    } else {
+        console.error(`[deleteFoodEntry] Food entry with ID ${currentEditingFoodEntry.id} not found in dateKey ${currentEditingDateKey}.`);
+        alert("Fehler: Zu löschender Eintrag nicht gefunden.");
+    }
+    
+    closeFoodDetailModal();
+}
+
 
 function addFoodToMeal(mealType, productData, portionGrams) {
     if (!productData || isNaN(portionGrams) || portionGrams <= 0) {
@@ -896,10 +1087,15 @@ function renderTodayPageMealSections() {
             
             const entrySpan = document.createElement('span');
             entrySpan.textContent = `${entry.name} - ${entry.kcal} kcal (${entry.portion}g)`;
+            // Make the span clickable to open the modal
+            entrySpan.style.cursor = 'pointer';
+            entrySpan.classList.add('hover:text-[#9FB8DF]'); // Optional: add hover effect
+            entrySpan.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent event bubbling if entryDiv itself has/gets other listeners
+                openFoodDetailModal(entry, todayDateKey);
+            });
             entryDiv.appendChild(entrySpan);
-
-            entryDiv.style.cursor = 'pointer';
-            entryDiv.addEventListener('click', () => openFoodDetailModal(entry, todayDateKey));
+            // The main entryDiv is no longer directly clickable for opening the modal, only the span is.
             container.appendChild(entryDiv);
         });
     }
@@ -991,7 +1187,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     closeAddProductToMealModalButton = document.getElementById('closeAddProductToMealModalButton');
     modalProductSearchInput = document.getElementById('modalProductSearchInput');
     modalProductList = document.getElementById('modalProductList');
-    modalProductPortionInput_addToMeal = document.getElementById('modalProductPortionInput'); 
+    modalProductPortionInput_addToMeal = document.getElementById('modalAddMeal_PortionInput'); // Corrected ID
     cancelAddProductToMealButton = document.getElementById('cancelAddProductToMealButton');
     confirmAddProductToMealButton = document.getElementById('confirmAddProductToMealButton');
     
@@ -1010,6 +1206,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
     
     await asyncLoadProductsFromLocalStorage(); 
+    initializeFoodDetailModalOnce(); // Initialize food detail modal elements and listeners once
 
     loadSettingsFromLocalStorage(); 
     loadDarkModePreference(); 
