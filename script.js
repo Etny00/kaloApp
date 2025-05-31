@@ -67,6 +67,7 @@ let productCountDisplay;
 let productTableBody;
 let exportCsvButton;
 let importCsvButton;
+let onlineSearchLoadingIndicator; // Added for loading indicator
 
 // Pagination elements
 let prevPageButton;
@@ -555,11 +556,12 @@ async function initializeMealsPage() {
         exportCsvButton = document.getElementById('exportCsvButton');
         // importCsvButton is now importProductsButton and handled in DOMContentLoaded
 
-        // Online Search Button
+        // Online Search Button & Indicator
         const onlineSearchButton = document.getElementById('onlineSearchButton');
         if (onlineSearchButton) {
             onlineSearchButton.addEventListener('click', onlineProductSearch);
         }
+        onlineSearchLoadingIndicator = document.getElementById('onlineSearchLoadingIndicator');
 
         prevPageButton = document.getElementById('prevPageButton'); 
         nextPageButton = document.getElementById('nextPageButton'); 
@@ -1009,6 +1011,10 @@ async function onlineProductSearch() {
 
     console.log(`Searching for: ${initialProductName} at ${apiUrl}`);
 
+    if (onlineSearchLoadingIndicator) {
+        onlineSearchLoadingIndicator.style.display = 'inline';
+    }
+
     try {
         const response = await fetch(apiUrl, {
             method: 'GET',
@@ -1074,6 +1080,10 @@ async function onlineProductSearch() {
     } catch (error) {
         console.error("Error during online product search:", error);
         alert(`Fehler bei der Online-Suche: ${error.message}`);
+    } finally {
+        if (onlineSearchLoadingIndicator) {
+            onlineSearchLoadingIndicator.style.display = 'none';
+        }
     }
 }
 
