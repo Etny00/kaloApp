@@ -1163,3 +1163,56 @@ body.dark-mode .toggle-checkbox:checked {
 body.dark-mode .toggle-checkbox:checked + .toggle-label {
     background-color: var(--legend-blue-dark, #A5B4FC);
 }
+
+/* Loading Overlay Styles */
+#loadingOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8); /* Light theme overlay background */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10; /* Ensure it's above other content in the card */
+}
+
+body.dark-mode #loadingOverlay {
+    background-color: rgba(31, 41, 55, 0.8); /* gray-800 with opacity for dark theme */
+}
+
+#spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1); /* Light gray border for the track */
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border-left-color: var(--accent-color-light); /* Blue spinner color for light theme */
+    animation: spin 1s ease infinite;
+    margin-bottom: 15px;
+}
+
+body.dark-mode #spinner {
+    border-left-color: var(--accent-color-dark); /* Lighter blue spinner color for dark theme */
+    border-color: rgba(255, 255, 255, 0.1); /* Lighter track for dark mode */
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#cancelSearchButton {
+    /* Using Tailwind classes from index.html: px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 */
+    /* Additional styles can be added here if needed, but Tailwind should cover most */
+    font-weight: 500; /* medium */
+}
+
+/* Ensure cancel button text is visible in dark mode if it's white by default */
+body.dark-mode #cancelSearchButton {
+    /* Tailwind bg-red-500 is quite dark, white text is fine.
+       If a lighter red was used for dark mode, text color might need adjustment.
+       For now, assuming Tailwind's red-500 is acceptable for dark mode too, or it would have its own dark variant.
+    */
+}

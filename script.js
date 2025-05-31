@@ -67,7 +67,11 @@ let productCountDisplay;
 let productTableBody;
 let exportCsvButton;
 let importCsvButton;
-let onlineSearchLoadingIndicator; // Added for loading indicator
+// let onlineSearchLoadingIndicator; // Old indicator, replaced by overlay
+let loadingOverlay; // For the new full section overlay
+let cancelSearchButton; // Button to cancel the search
+
+let currentSearchAbortController = null; // To manage fetch cancellation
 
 // Pagination elements
 let prevPageButton;
@@ -561,7 +565,18 @@ async function initializeMealsPage() {
         if (onlineSearchButton) {
             onlineSearchButton.addEventListener('click', onlineProductSearch);
         }
-        onlineSearchLoadingIndicator = document.getElementById('onlineSearchLoadingIndicator');
+        // onlineSearchLoadingIndicator = document.getElementById('onlineSearchLoadingIndicator'); // Remove old
+        loadingOverlay = document.getElementById('loadingOverlay');
+        cancelSearchButton = document.getElementById('cancelSearchButton');
+
+        if (cancelSearchButton) {
+            cancelSearchButton.addEventListener('click', () => {
+                if (currentSearchAbortController) {
+                    currentSearchAbortController.abort();
+                    console.log("Search cancellation requested by user.");
+                }
+            });
+        }
 
         prevPageButton = document.getElementById('prevPageButton'); 
         nextPageButton = document.getElementById('nextPageButton'); 
@@ -1011,14 +1026,20 @@ async function onlineProductSearch() {
 
     console.log(`Searching for: ${initialProductName} at ${apiUrl}`);
 
-    if (onlineSearchLoadingIndicator) {
-        onlineSearchLoadingIndicator.style.display = 'inline';
+    // if (onlineSearchLoadingIndicator) { // Remove old indicator logic
+    //     onlineSearchLoadingIndicator.style.display = 'inline';
+    // }
+    if (loadingOverlay) {
+        loadingOverlay.style.display = 'flex'; // Show new overlay
     }
+
+    currentSearchAbortController = new AbortController();
 
     try {
         const response = await fetch(apiUrl, {
             method: 'GET',
-            headers: { 'User-Agent': userAgent }
+            headers: { 'User-Agent': userAgent },
+            signal: currentSearchAbortController.signal // Pass the signal
         });
 
         if (!response.ok) {
@@ -1078,12 +1099,25 @@ async function onlineProductSearch() {
         }
 
     } catch (error) {
-        console.error("Error during online product search:", error);
-        alert(`Fehler bei der Online-Suche: ${error.message}`);
-    } finally {
-        if (onlineSearchLoadingIndicator) {
-            onlineSearchLoadingIndicator.style.display = 'none';
+        // Error handling:
+        // If the error is an AbortError, it means the user clicked the cancel button.
+        // In this case, we just log it and don't show an error alert to the user,
+        // as the cancellation was intentional.
+        if (error.name === 'AbortError') {
+            console.log('Fetch aborted by user.');
+        } else {
+            // For any other errors (network, API returning non-OK, etc.), log and alert the user.
+            console.error("Error during online product search:", error);
+            alert(`Fehler bei der Online-Suche: ${error.message}`);
         }
+    } finally {
+        // if (onlineSearchLoadingIndicator) { // Remove old indicator logic
+        //     onlineSearchLoadingIndicator.style.display = 'none';
+        // }
+        if (loadingOverlay) {
+            loadingOverlay.style.display = 'none'; // Hide new overlay
+        }
+        currentSearchAbortController = null; // Clean up controller
     }
 }
 
