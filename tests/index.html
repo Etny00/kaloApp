@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUnit Tests for Kalorien-Tracker App</title>
+    <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.20.0.css">
+</head>
+<body>
+    <div id="qunit"></div>
+    <div id="qunit-fixture">
+        <!-- Mock HTML structure for product input fields -->
+        <div id="meals-page"> <!-- Parent container as in actual app -->
+            <input type="text" id="productNameInput" />
+            <input type="number" id="productKcalInput" />
+            <input type="number" id="productCarbsInput" />
+            <input type="number" id="productProteinInput" />
+            <input type="number" id="productFatInput" />
+            <input type="number" id="productPortionInput" />
+            <!-- Add other elements if onlineProductSearch interacts with them directly, though not expected for now -->
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/qunit/qunit-2.20.0.js"></script>
+
+    <!-- Main application script - adjust path as necessary -->
+    <!-- Note: script.js might have DOMContentLoaded listeners or global var initializations.
+         These might need careful handling or deferring in a test environment.
+         For now, including it directly. Some functions might need to be manually called if they depend on DOMContentLoaded.
+    -->
+    <script src="../script.js"></script>
+
+    <!-- Test script -->
+    <script src="test_script.js"></script>
+</body>
+</html>

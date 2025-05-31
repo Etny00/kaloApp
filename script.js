@@ -554,6 +554,13 @@ async function initializeMealsPage() {
         productTableBody = document.getElementById('productTableBody'); 
         exportCsvButton = document.getElementById('exportCsvButton');
         // importCsvButton is now importProductsButton and handled in DOMContentLoaded
+
+        // Online Search Button
+        const onlineSearchButton = document.getElementById('onlineSearchButton');
+        if (onlineSearchButton) {
+            onlineSearchButton.addEventListener('click', onlineProductSearch);
+        }
+
         prevPageButton = document.getElementById('prevPageButton'); 
         nextPageButton = document.getElementById('nextPageButton'); 
         paginationInfo = document.getElementById('paginationInfo'); 
@@ -982,6 +989,101 @@ function deleteProductFromModal() {
         closeProductDetailModal();
         alert(`"${currentEditingProduct.Produktname}" wurde gelöscht.`);
     }
+}
+
+// --- Online Product Search Function ---
+async function onlineProductSearch() {
+    if (!productNameInput) {
+        console.error("Product name input field not found.");
+        alert("Fehler: Produktname-Eingabefeld nicht gefunden.");
+        return;
+    }
+    const initialProductName = productNameInput.value.trim();
+    if (!initialProductName) {
+        alert("Bitte geben Sie einen Produktnamen ein, um online zu suchen.");
+        return;
+    }
+
+    const apiUrl = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(initialProductName)}&search_simple=1&action=process&json=1&page_size=1`;
+    const userAgent = "KalorienTrackerApp/1.0 (dev@example.com)";
+
+    console.log(`Searching for: ${initialProductName} at ${apiUrl}`);
+
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'GET',
+            headers: { 'User-Agent': userAgent }
+        });
+
+        if (!response.ok) {
+            throw new Error(`API request failed with status ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        console.log("API Response:", data);
+
+        if (data.products && data.products.length > 0) {
+            const offProduct = data.products[0];
+            const extractedProductName = offProduct.product_name_de || offProduct.product_name || initialProductName;
+            const kcal = offProduct.nutriments?.['energy-kcal_100g'] || offProduct.nutriments?.energy_value || ""; // Check for energy_value as fallback
+            const carbs = offProduct.nutriments?.carbohydrates_100g || "";
+            const protein = offProduct.nutriments?.proteins_100g || "";
+            const fat = offProduct.nutriments?.fat_100g || "";
+
+            let servingSize = offProduct.serving_size || "";
+            // Attempt to parse serving size if it's primarily numeric and implies grams
+            if (servingSize && /^\d+(\.\d+)?\s*g?$/.test(servingSize.toLowerCase())) {
+                servingSize = parseFloat(servingSize.replace(/\s*g/i, '')) || "";
+            } else if (servingSize) { // If it has other units or complex string, log and clear for now
+                console.log(`Serving size "${servingSize}" could not be reliably parsed to grams. Clearing portion field.`);
+                servingSize = ""; // Or set to a default if preferred
+            }
+
+
+            const productDataToLoad = {
+                name: extractedProductName,
+                kcal: kcal ? parseFloat(kcal).toFixed(0) : "0", // Ensure it's a string "0" if null/undefined
+                carbs: carbs ? parseFloat(carbs).toFixed(1) : "0",
+                protein: protein ? parseFloat(protein).toFixed(1) : "0",
+                fat: fat ? parseFloat(fat).toFixed(1) : "0",
+                portion: servingSize ? parseFloat(servingSize).toFixed(0) : ""
+            };
+
+            console.log("Extracted product data:", productDataToLoad);
+
+            const existingProduct = products.find(p => p.Produktname.toLowerCase() === productDataToLoad.name.toLowerCase());
+
+            if (existingProduct) {
+                if (confirm(`Produkt "${productDataToLoad.name}" existiert bereits. Möchten Sie die Daten mit den online gefundenen Werten überschreiben?`)) {
+                    populateProductFields(productDataToLoad);
+                    alert(`Daten für "${productDataToLoad.name}" wurden im Formular aktualisiert.`);
+                } else {
+                    // User cancelled overwrite
+                    return;
+                }
+            } else {
+                populateProductFields(productDataToLoad);
+                alert(`Daten für "${productDataToLoad.name}" wurden in das Formular geladen.`);
+            }
+
+        } else {
+            console.log("No products found for this search term.");
+            alert("Keine Produkte für diesen Suchbegriff gefunden.");
+        }
+
+    } catch (error) {
+        console.error("Error during online product search:", error);
+        alert(`Fehler bei der Online-Suche: ${error.message}`);
+    }
+}
+
+function populateProductFields(productData) {
+    if (productNameInput) productNameInput.value = productData.name || "";
+    if (productKcalInput) productKcalInput.value = productData.kcal || "0";
+    if (productCarbsInput) productCarbsInput.value = productData.carbs || "0";
+    if (productProteinInput) productProteinInput.value = productData.protein || "0";
+    if (productFatInput) productFatInput.value = productData.fat || "0";
+    if (productPortionInput) productPortionInput.value = productData.portion || "";
 }
 
 // --- Add Product to Meal Functions ---
