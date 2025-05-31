@@ -1190,7 +1190,7 @@ body.dark-mode #loadingOverlay {
     border-radius: 50%;
     border-left-color: var(--accent-color-light); /* Blue spinner color for light theme */
     animation: spin 1s ease infinite;
-    margin-bottom: 15px;
+    margin-bottom: 25px; /* Increased space */
 }
 
 body.dark-mode #spinner {
@@ -1203,40 +1203,6 @@ body.dark-mode #spinner {
     100% { transform: rotate(360deg); }
 }
 
-#cancelSearchButton {
-    padding: 8px 15px; /* Tailwind px-4 py-2 is 1rem (16px) horizontal, 0.5rem (8px) vertical */
-    border-radius: 5px; /* Tailwind 'rounded' is 0.25rem (4px). 5px is fine. */
-    border: 1px solid #ef4444; /* red-500 */
-    color: #ef4444; /* red-500 */
-    background-color: transparent;
-    cursor: pointer;
-    font-weight: 500; /* medium */
-    text-align: center;
-    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, border-color 0.2s ease-in-out;
-}
-
-#cancelSearchButton:hover {
-    background-color: #ef4444; /* red-500 */
-    color: white;
-}
-
-#cancelSearchButton:focus {
-    outline: 2px solid #ef4444; /* Basic focus outline */
-    outline-offset: 2px;
-}
-
-
-/* Ensure cancel button text is visible in dark mode if it's white by default */
-body.dark-mode #cancelSearchButton {
-    border-color: var(--action-button-delete-text-dark, #FCA5A5); /* Use a lighter red for dark mode border */
-    color: var(--action-button-delete-text-dark, #FCA5A5); /* Lighter red text for dark mode */
-}
-
-body.dark-mode #cancelSearchButton:hover {
-    background-color: var(--action-button-delete-text-dark, #FCA5A5);
-    color: var(--card-bg-dark, #1F2937); /* Dark text on hover for dark mode */
-}
-
-body.dark-mode #cancelSearchButton:focus {
-    outline-color: var(--action-button-delete-text-dark, #FCA5A5);
-}
+/* Custom CSS rules for #cancelSearchButton have been removed. */
+/* Styling is now handled by Tailwind classes on the element in index.html, */
+/* mirroring the #resetAppDataButton classes. */
