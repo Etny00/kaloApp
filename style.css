@@ -1194,8 +1194,8 @@ body.dark-mode #loadingOverlay {
 }
 
 body.dark-mode #spinner {
-    border-left-color: var(--accent-color-dark); /* Lighter blue spinner color for dark theme */
-    border-color: rgba(255, 255, 255, 0.1); /* Lighter track for dark mode */
+    border-color: rgba(255, 255, 255, 0.2); /* Made track slightly more visible */
+    border-left-color: var(--accent-color-dark); /* Active segment: lighter blue spinner color for dark theme */
 }
 
 @keyframes spin {
@@ -1204,15 +1204,39 @@ body.dark-mode #spinner {
 }
 
 #cancelSearchButton {
-    /* Using Tailwind classes from index.html: px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 */
-    /* Additional styles can be added here if needed, but Tailwind should cover most */
+    padding: 8px 15px; /* Tailwind px-4 py-2 is 1rem (16px) horizontal, 0.5rem (8px) vertical */
+    border-radius: 5px; /* Tailwind 'rounded' is 0.25rem (4px). 5px is fine. */
+    border: 1px solid #ef4444; /* red-500 */
+    color: #ef4444; /* red-500 */
+    background-color: transparent;
+    cursor: pointer;
     font-weight: 500; /* medium */
+    text-align: center;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, border-color 0.2s ease-in-out;
 }
+
+#cancelSearchButton:hover {
+    background-color: #ef4444; /* red-500 */
+    color: white;
+}
+
+#cancelSearchButton:focus {
+    outline: 2px solid #ef4444; /* Basic focus outline */
+    outline-offset: 2px;
+}
+
 
 /* Ensure cancel button text is visible in dark mode if it's white by default */
 body.dark-mode #cancelSearchButton {
-    /* Tailwind bg-red-500 is quite dark, white text is fine.
-       If a lighter red was used for dark mode, text color might need adjustment.
-       For now, assuming Tailwind's red-500 is acceptable for dark mode too, or it would have its own dark variant.
-    */
+    border-color: var(--action-button-delete-text-dark, #FCA5A5); /* Use a lighter red for dark mode border */
+    color: var(--action-button-delete-text-dark, #FCA5A5); /* Lighter red text for dark mode */
+}
+
+body.dark-mode #cancelSearchButton:hover {
+    background-color: var(--action-button-delete-text-dark, #FCA5A5);
+    color: var(--card-bg-dark, #1F2937); /* Dark text on hover for dark mode */
+}
+
+body.dark-mode #cancelSearchButton:focus {
+    outline-color: var(--action-button-delete-text-dark, #FCA5A5);
 }
