@@ -1021,7 +1021,7 @@ async function onlineProductSearch() {
         return;
     }
 
-    const apiUrl = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(initialProductName)}&search_simple=1&action=process&json=1&page_size=1`;
+    const apiUrl = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(initialProductName)}&search_simple=1&action=process&json=1&page_size=5&sort_by=unique_scans_n`;
     const userAgent = "KalorienTrackerApp/1.0 (dev@example.com)";
 
     console.log(`Searching for: ${initialProductName} at ${apiUrl}`);
@@ -1048,11 +1048,50 @@ async function onlineProductSearch() {
 
         const data = await response.json();
         console.log("API Response:", data);
+        let selectedOffProduct = null;
+        const normalizedSearchTerm = initialProductName.toLowerCase();
 
         if (data.products && data.products.length > 0) {
-            const offProduct = data.products[0];
+            // Pass 1: Exact Match
+            for (const product of data.products) {
+                const productNameAPI = product.product_name_de || product.product_name || "";
+                if (productNameAPI.toLowerCase() === normalizedSearchTerm) {
+                    selectedOffProduct = product;
+                    console.log("Exact match found:", selectedOffProduct.product_name_de || selectedOffProduct.product_name);
+                    break;
+                }
+            }
+
+            // Pass 2: Starts With Match
+            if (!selectedOffProduct) {
+                for (const product of data.products) {
+                    const productNameAPI = product.product_name_de || product.product_name || "";
+                    if (productNameAPI.toLowerCase().startsWith(normalizedSearchTerm)) {
+                        selectedOffProduct = product;
+                        console.log("Starts with match selected:", selectedOffProduct.product_name_de || selectedOffProduct.product_name);
+                        break;
+                    }
+                }
+            }
+
+            // Pass 3: Reasonably Close First Result (Fallback)
+            if (!selectedOffProduct && data.products.length > 0) {
+                const firstProduct = data.products[0];
+                const firstProductNameAPI = firstProduct.product_name_de || firstProduct.product_name || "";
+                // Heuristic: product name isn't more than twice as long as search term, or search term is reasonably long for a substring match
+                if (firstProductNameAPI.toLowerCase().includes(normalizedSearchTerm) && (firstProductNameAPI.length <= normalizedSearchTerm.length * 2.5 || normalizedSearchTerm.length > 5)) {
+                    selectedOffProduct = firstProduct;
+                    console.log("Top popularity result selected (heuristic):", selectedOffProduct.product_name_de || selectedOffProduct.product_name);
+                } else {
+                     console.log("Top popularity result was too dissimilar:", firstProductNameAPI);
+                }
+            }
+        }
+
+        if (selectedOffProduct) {
+            const offProduct = selectedOffProduct; // Use the selected product
             const extractedProductName = offProduct.product_name_de || offProduct.product_name || initialProductName;
-            const kcal = offProduct.nutriments?.['energy-kcal_100g'] || offProduct.nutriments?.energy_value || ""; // Check for energy_value as fallback
+            const kcal = offProduct.nutriments?.['energy-kcal_100g'] || offProduct.nutriments?.energy_value || "";
             const carbs = offProduct.nutriments?.carbohydrates_100g || "";
             const protein = offProduct.nutriments?.proteins_100g || "";
             const fat = offProduct.nutriments?.fat_100g || "";
@@ -1095,7 +1134,7 @@ async function onlineProductSearch() {
 
         } else {
             console.log("No products found for this search term.");
-            alert("Keine Produkte für diesen Suchbegriff gefunden.");
+            alert("Keine Produkte für diesen Suchbegriff gefunden oder Top-Resultat zu unähnlich.");
         }
 
     } catch (error) {
